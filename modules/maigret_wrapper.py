@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from config import OUTPUT_DIR, Colors
 
+
 class MaigretWrapper:
 
     def __init__(self):
@@ -182,6 +183,7 @@ class MaigretWrapper:
             for f in result["output_files"]:
                 if os.path.exists(f):
                     print(f"  {Colors.GREEN}✓{Colors.RESET} {f}")
+
 
 def run_maigret():
     maigret = MaigretWrapper()

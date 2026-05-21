@@ -489,12 +489,14 @@ REPORT_TEMPLATE = r"""<!DOCTYPE html>
 </body>
 </html>"""
 
+
 def _bar_color(pct: int) -> str:
     if pct >= 75:
         return "#3fb950"
     if pct >= 50:
         return "#d29922"
     return "#f85149"
+
 
 def _opsec_circle_color(score: int) -> str:
     if score >= 71:
@@ -509,6 +511,7 @@ CAT_LABELS = {
     "infrastructure": "Infrastructure",
     "web_security": "Web Security",
 }
+
 
 def generate_html_report(
     target: str,

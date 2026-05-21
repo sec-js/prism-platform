@@ -11,6 +11,7 @@ import sys
 sys.path.append('..')
 from config import OUTPUT_DIR, Colors
 
+
 @dataclass
 class SiteResult:
     site: str
@@ -18,6 +19,7 @@ class SiteResult:
     status: str
     http_code: int = 0
     response_time: float = 0.0
+
 
 class Blackbird:
 
@@ -281,6 +283,7 @@ class Blackbird:
         errors = [r for r in self.results if r.status in ("error", "timeout")]
         if errors:
             print(f"\n{Colors.YELLOW}Errors/Timeouts: {len(errors)}{Colors.RESET}")
+
 
 def run_blackbird():
     print(f"\n{Colors.BOLD}Blackbird - Username Search{Colors.RESET}")

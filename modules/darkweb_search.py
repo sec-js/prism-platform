@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any, List
 
+
 class DarkWebSearch:
     BACKENDS = [
         {

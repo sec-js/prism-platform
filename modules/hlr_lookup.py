@@ -6,6 +6,7 @@ import sys
 sys.path.append('..')
 from config import NUMVERIFY_API_KEY, Colors
 
+
 class HLRLookup:
 
     def __init__(self):
@@ -202,6 +203,7 @@ class HLRLookup:
                     pass
 
         return result
+
 
 def run_hlr_lookup():
     hlr = HLRLookup()

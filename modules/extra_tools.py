@@ -19,6 +19,7 @@ try:
 except ImportError:
     DNS_AVAILABLE = False
 
+
 class WhoisLookup:
 
     def lookup(self, domain: str) -> Dict[str, Any]:
@@ -101,6 +102,7 @@ class WhoisLookup:
             print(f"{Colors.YELLOW}Contact Emails:{Colors.RESET}")
             for email in result["emails"]:
                 print(f"  • {email}")
+
 
 class GeoIPLookup:
 
@@ -191,6 +193,7 @@ class GeoIPLookup:
         print(f"{Colors.YELLOW}Timezone:{Colors.RESET} {result.get('timezone', 'N/A')}")
         print(f"{Colors.YELLOW}Postal Code:{Colors.RESET} {result.get('postal', 'N/A')}")
 
+
 class DNSLookup:
 
     RECORD_TYPES = ['A', 'AAAA', 'MX', 'NS', 'TXT', 'CNAME', 'SOA', 'PTR']
@@ -261,6 +264,7 @@ class DNSLookup:
                             print(f"  {r}")
                     else:
                         print(f"  • {r}")
+
 
 class WebsiteAnalyzer:
 
@@ -415,6 +419,7 @@ class WebsiteAnalyzer:
             for phone in result["phones"][:5]:
                 print(f"  • {phone}")
 
+
 def run_whois():
     whois_lookup = WhoisLookup()
     print(f"\n{Colors.BOLD}WHOIS Lookup{Colors.RESET}")
@@ -424,6 +429,7 @@ def run_whois():
         whois_lookup.print_result(result)
         return result
     return None
+
 
 def run_geoip():
     geoip = GeoIPLookup()
@@ -435,6 +441,7 @@ def run_geoip():
         return result
     return None
 
+
 def run_dns():
     dns_lookup = DNSLookup()
     print(f"\n{Colors.BOLD}DNS Lookup{Colors.RESET}")
@@ -444,6 +451,7 @@ def run_dns():
         dns_lookup.print_result(result)
         return result
     return None
+
 
 def run_website_analysis():
     analyzer = WebsiteAnalyzer()

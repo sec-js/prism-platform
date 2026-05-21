@@ -4,11 +4,13 @@ from email import message_from_string
 from typing import Dict, Any, List, Optional
 import requests
 
+
 def _reverse_dns(ip: str) -> Optional[str]:
     try:
         return socket.gethostbyaddr(ip)[0]
     except Exception:
         return None
+
 
 def _parse_received_ip(line: str) -> Optional[str]:
     ip_re = re.compile(r'\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b')
@@ -26,6 +28,7 @@ def _parse_received_ip(line: str) -> Optional[str]:
         return ip
     return None
 
+
 def _geoip(ip: str) -> Dict:
     try:
         r = requests.get(f'https://ipinfo.io/{ip}/json', timeout=6)
@@ -41,6 +44,7 @@ def _geoip(ip: str) -> Dict:
     except Exception:
         pass
     return {}
+
 
 def analyze_headers(raw_headers: str) -> Dict[str, Any]:
     result = {

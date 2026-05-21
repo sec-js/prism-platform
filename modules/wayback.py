@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 
+
 class WaybackMachine:
 
     CDX_URL = "https://web.archive.org/cdx/search/cdx"
@@ -193,6 +194,7 @@ class WaybackMachine:
             print(f"\n{Colors.BOLD}Sample URLs:{Colors.RESET}")
             for url in result["urls"][:15]:
                 print(f"  {Colors.CYAN}•{Colors.RESET} {url}")
+
 
 def run_wayback():
     print(f"\n{Colors.BOLD}Wayback Machine{Colors.RESET}")

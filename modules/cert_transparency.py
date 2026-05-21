@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 
+
 class CertTransparency:
 
     BASE_URL = "https://crt.sh"
@@ -104,6 +105,7 @@ class CertTransparency:
                     f"{Colors.CYAN}Issuer:{Colors.RESET} {cert['issuer']}  "
                     f"{Colors.CYAN}Logged:{Colors.RESET} {(cert['logged_at'] or '')[:10]}"
                 )
+
 
 def run_cert_transparency():
     ct = CertTransparency()

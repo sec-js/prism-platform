@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from config import Colors
 
+
 class SMTPVerifier:
 
     def __init__(self, timeout: int = 10):
@@ -203,6 +204,7 @@ class SMTPVerifier:
 
         if result.get("error"):
             print(f"\n{Colors.RED}Error: {result['error']}{Colors.RESET}")
+
 
 def run_smtp_verify():
     verifier = SMTPVerifier()

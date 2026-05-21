@@ -11,6 +11,7 @@ RISK_LEVELS = {
     (86, 100): ("MINIMAL", Colors.GREEN),
 }
 
+
 class OpsecScorer:
 
     def __init__(self):
@@ -306,6 +307,7 @@ class OpsecScorer:
             for f in result["all_findings"]:
                 c = sev_colors.get(f["severity"], Colors.RESET)
                 print(f"  {c}[{f['severity']:<8}]{Colors.RESET} {f['message']}")
+
 
 def score_from_results(all_results: Dict[str, Any]) -> Dict[str, Any]:
     scorer = OpsecScorer()

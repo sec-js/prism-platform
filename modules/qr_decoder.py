@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any
 
+
 class QRDecoder:
 
     def decode(self, image_bytes: bytes, filename: str = "qr.png") -> Dict[str, Any]:

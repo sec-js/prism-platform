@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 from config import Colors, SHODAN_API_KEY
 
+
 class ShodanLookup:
 
     BASE_URL = "https://api.shodan.io"
@@ -182,6 +183,7 @@ class ShodanLookup:
                     f"  {Colors.GREEN}{m['ip']}:{m['port']}{Colors.RESET} "
                     f"| {m.get('org', 'N/A')} | {m.get('country', 'N/A')}"
                 )
+
 
 def run_shodan():
     print(f"\n{Colors.BOLD}Shodan Lookup{Colors.RESET}")

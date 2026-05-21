@@ -13,6 +13,7 @@ NODE_COLORS = {
     "url": "#81ecec",
 }
 
+
 def _node(node_id: str, label: str, node_type: str, title: str = "") -> Dict:
     return {
         "id": node_id,
@@ -24,6 +25,7 @@ def _node(node_id: str, label: str, node_type: str, title: str = "") -> Dict:
         "shape": _shape(node_type),
     }
 
+
 def _edge(from_id: str, to_id: str, label: str = "", dashes: bool = False) -> Dict:
     return {
         "from": from_id,
@@ -33,6 +35,7 @@ def _edge(from_id: str, to_id: str, label: str = "", dashes: bool = False) -> Di
         "color": {"color": "#636e72", "highlight": "#00d4ff"},
         "smooth": {"type": "dynamic"},
     }
+
 
 def _shape(node_type: str) -> str:
     shapes = {
@@ -48,6 +51,7 @@ def _shape(node_type: str) -> str:
         "url": "ellipse",
     }
     return shapes.get(node_type, "dot")
+
 
 def build_graph(target: str, scan_type: str, results: Dict[str, Any]) -> Dict[str, Any]:
     nodes: List[Dict] = []

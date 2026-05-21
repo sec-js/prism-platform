@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 from config import Colors, VIRUSTOTAL_API_KEY, ABUSEIPDB_API_KEY
 
+
 class VirusTotal:
 
     BASE_URL = "https://www.virustotal.com/api/v3"
@@ -143,6 +144,7 @@ class VirusTotal:
             cats = list(result["categories"].values())
             print(f"{Colors.YELLOW}Categories:{Colors.RESET} {', '.join(set(cats))}")
 
+
 class AbuseIPDB:
 
     BASE_URL = "https://api.abuseipdb.com/api/v2"
@@ -223,6 +225,7 @@ class AbuseIPDB:
             print(f"{Colors.RED}⚠ TOR Exit Node{Colors.RESET}")
         if result.get("last_reported"):
             print(f"{Colors.YELLOW}Last Reported:{Colors.RESET} {result['last_reported'][:10]}")
+
 
 def run_threat_intel():
     print(f"\n{Colors.BOLD}Threat Intelligence Lookup{Colors.RESET}")

@@ -13,6 +13,7 @@ FREE_PROVIDERS = {
     "gmx.com", "gmx.net", "tutanota.com", "tuta.io", "fastmail.com",
 }
 
+
 class EmailRepLookup:
 
     def __init__(self):
@@ -175,6 +176,7 @@ class EmailRepLookup:
                 print(f"  {Colors.RED}•{Colors.RESET} {f}")
 
 HunterIO = EmailRepLookup
+
 
 def run_emailrep():
     er = EmailRepLookup()

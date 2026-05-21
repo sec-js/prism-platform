@@ -5,6 +5,7 @@ import sys
 sys.path.append('..')
 from config import LEAK_LOOKUP_API_KEY, Colors
 
+
 class LeakLookup:
 
     HIBP_API = "https://haveibeenpwned.com/api/v3"
@@ -204,6 +205,7 @@ class LeakLookup:
 
         if result.get("error"):
             print(f"\n{Colors.YELLOW}Note:{Colors.RESET} {result['error']}")
+
 
 def run_leak_lookup():
     ll = LeakLookup()
