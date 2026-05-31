@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { Loader2, ArrowLeft, ExternalLink, Upload, XCircle, FileUp } from 'lucide-react';
+import { useTranslations } from '@/lib/i18n';
 import * as api from '@/lib/api';
 import type { ToolMode, CryptoResult, QrResult, HeaderAnalysisResult, MetaResult, MacResult } from '@/lib/types';
 
@@ -13,7 +14,7 @@ function Card({ title, children, className }: { title?: string; children: React.
   );
 }
 
-function ErrorCard({ message }: { message: string }) {
+function ErrorCard({ label, message }: { label: string; message: string }) {
   return (
     <div className="card mb-3 border-red/20 animate-fade-in">
       <div className="p-4 flex gap-3 items-start">
@@ -21,7 +22,7 @@ function ErrorCard({ message }: { message: string }) {
           <XCircle size={14} className="text-red" />
         </div>
         <div>
-          <div className="text-[12px] font-semibold text-red mb-1">Error</div>
+          <div className="text-[12px] font-semibold text-red mb-1">{label}</div>
           <div className="text-[12px] text-text-3 leading-relaxed">{message}</div>
         </div>
       </div>
@@ -54,6 +55,7 @@ function RunBtn({ loading, label, onClick, disabled }: { loading: boolean; label
 }
 
 function CryptoPanel() {
+  const { t } = useTranslations();
   const [addr, setAddr] = useState('');
   const [result, setResult] = useState<CryptoResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -69,25 +71,25 @@ function CryptoPanel() {
   };
   return (
     <div>
-      <Card title="Crypto Address Lookup · Bitcoin & Ethereum">
-        <div className="flex gap-2 flex-wrap"><Input value={addr} onChange={setAddr} placeholder="1A1zP1…  /  0x742d…  /  bc1q…" onEnter={run} /><RunBtn loading={loading} label="Lookup" onClick={run} /></div>
+      <Card title={t('toolPanels.crypto.title')}>
+        <div className="flex gap-2 flex-wrap"><Input value={addr} onChange={setAddr} placeholder={t('toolPanels.crypto.placeholder')} onEnter={run} /><RunBtn loading={loading} label={t('toolPanels.crypto.lookup')} onClick={run} /></div>
       </Card>
       {result && (
         result.error && !result.balance ? (
-          <ErrorCard message={result.error} />
+          <ErrorCard label={t('toolPanels.error')} message={result.error} />
         ) : (
           <Card>
-            <Row label="Type" value={result.type} />
-            <Row label="Address" value={result.address} />
-            <Row label="Balance" value={result.balance} />
-            <Row label="≈ USD" value={result.balance_usd} />
-            <Row label="Total Received" value={result.total_received} />
-            <Row label="Total Sent" value={result.total_sent} />
-            <Row label="Transactions" value={result.tx_count} />
+            <Row label={t('toolPanels.crypto.type')} value={result.type} />
+            <Row label={t('toolPanels.crypto.address')} value={result.address} />
+            <Row label={t('toolPanels.crypto.balance')} value={result.balance} />
+            <Row label={t('toolPanels.crypto.usd')} value={result.balance_usd} />
+            <Row label={t('toolPanels.crypto.totalReceived')} value={result.total_received} />
+            <Row label={t('toolPanels.crypto.totalSent')} value={result.total_sent} />
+            <Row label={t('toolPanels.crypto.transactions')} value={result.tx_count} />
             {result.explorer_url && (
               <div className="pt-3">
                 <a href={result.explorer_url} target="_blank" rel="noreferrer" className="btn-ghost h-8 px-3 text-[11px] inline-flex items-center gap-1">
-                  <ExternalLink size={11} /> Open Explorer
+                  <ExternalLink size={11} /> {t('toolPanels.crypto.openExplorer')}
                 </a>
               </div>
             )}
@@ -99,6 +101,7 @@ function CryptoPanel() {
 }
 
 function DropZone({ accept, file, onChange, hint }: { accept: string; file: File | null; onChange: (f: File | null) => void; hint?: string }) {
+  const { t } = useTranslations();
   const [drag, setDrag] = useState(false);
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault(); setDrag(false);
@@ -119,11 +122,11 @@ function DropZone({ accept, file, onChange, hint }: { accept: string; file: File
       { file ? (
         <>
           <div className="text-[12px] font-semibold text-text-1 truncate max-w-full px-4">{file.name}</div>
-          <div className="text-[10px] text-text-3">{(file.size / 1024).toFixed(1)} KB · click to change</div>
+          <div className="text-[10px] text-text-3">{(file.size / 1024).toFixed(1)} KB · {t('toolPanels.qr.clickToChange')}</div>
         </>
       ) : (
         <>
-          <div className="text-[12px] font-semibold text-text-2">Drop file here or <span className="text-blue">browse</span></div>
+          <div className="text-[12px] font-semibold text-text-2">{t('toolPanels.qr.dropFile')} <span className="text-blue">{t('toolPanels.qr.browse')}</span></div>
           { hint && <div className="text-[10px] text-text-3">{hint}</div> }
         </>
       )}
@@ -133,6 +136,7 @@ function DropZone({ accept, file, onChange, hint }: { accept: string; file: File
 }
 
 function QrPanel() {
+  const { t } = useTranslations();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<QrResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -148,21 +152,21 @@ function QrPanel() {
   };
   return (
     <div>
-      <Card title="QR Code Decoder">
+      <Card title={t('toolPanels.qr.title')}>
         <div className="flex flex-col gap-3">
-          <DropZone accept="image/*" file={file} onChange={setFile} hint="PNG, JPG, WEBP supported" />
-          <RunBtn loading={loading} label="Decode QR" onClick={run} disabled={!file} />
+          <DropZone accept="image/*" file={file} onChange={setFile} hint={t('toolPanels.qr.hint')} />
+          <RunBtn loading={loading} label={t('toolPanels.qr.decode')} onClick={run} disabled={!file} />
         </div>
       </Card>
       {result && (
         <Card>
           {result.error ? (
-            <ErrorCard message={result.error} />
+            <ErrorCard label={t('toolPanels.error')} message={result.error} />
           ) : (
             <div>
-              <Row label="Type" value={result.type} />
+              <Row label={t('toolPanels.qr.type')} value={result.type} />
               <div className="flex gap-3 text-[12px] py-1">
-                <span className="text-text-3 w-36 shrink-0">Content</span>
+                <span className="text-text-3 w-36 shrink-0">{t('toolPanels.qr.content')}</span>
                 {result.is_url ? (
                   <a href={result.decoded} target="_blank" rel="noreferrer" className="text-blue font-mono text-[11px] break-all hover:underline">{result.decoded}</a>
                 ) : (
@@ -171,7 +175,7 @@ function QrPanel() {
               </div>
               {result.is_url && result.decoded && (
                 <a href={result.decoded} target="_blank" rel="noreferrer" className="btn-ghost h-8 px-3 text-[11px] mt-3 inline-flex items-center gap-1">
-                  <ExternalLink size={11} /> Open URL
+                  <ExternalLink size={11} /> {t('toolPanels.qr.openUrl')}
                 </a>
               )}
             </div>
@@ -183,6 +187,7 @@ function QrPanel() {
 }
 
 function MetadataPanel() {
+  const { t } = useTranslations();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<MetaResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -198,54 +203,54 @@ function MetadataPanel() {
   };
   return (
     <div>
-      <Card title="File Metadata &amp; GEOINT">
+      <Card title={t('toolPanels.metadata.title')}>
         <div className="flex flex-col gap-3">
           <DropZone accept=".jpg,.jpeg,.png,.tiff,.heic,.webp,.pdf,.docx" file={file} onChange={setFile} hint="JPG, PNG, TIFF, HEIC, PDF, DOCX" />
-          <RunBtn loading={loading} label="Extract Metadata" onClick={run} disabled={!file} />
+          <RunBtn loading={loading} label={t('toolPanels.metadata.extract')} onClick={run} disabled={!file} />
         </div>
       </Card>
       {result && (
         <div>
           {result.error ? (
-            <ErrorCard message={result.error} />
+            <ErrorCard label={t('toolPanels.error')} message={result.error} />
           ) : (
             <>
-              <Card title="File Info">
-                <Row label="Filename" value={result.filename} />
-                <Row label="Type" value={result.file_type} />
-                <Row label="Size" value={result.file_size ? `${(result.file_size / 1024).toFixed(1)} KB` : undefined} />
-                <Row label="Dimensions" value={result.dimensions ? `${result.dimensions.width} × ${result.dimensions.height} px` : undefined} />
-                <Row label="Author / Copyright" value={result.author} />
-                <Row label="Software" value={result.software} />
+              <Card title={t('toolPanels.metadata.fileInfo')}>
+                <Row label={t('toolPanels.metadata.filename')} value={result.filename} />
+                <Row label={t('toolPanels.metadata.fileType')} value={result.file_type} />
+                <Row label={t('toolPanels.metadata.size')} value={result.file_size ? `${(result.file_size / 1024).toFixed(1)} KB` : undefined} />
+                <Row label={t('toolPanels.metadata.dimensions')} value={result.dimensions ? `${result.dimensions.width} × ${result.dimensions.height} px` : undefined} />
+                <Row label={t('toolPanels.metadata.author')} value={result.author} />
+                <Row label={t('toolPanels.metadata.software')} value={result.software} />
               </Card>
               {result.timestamps && Object.keys(result.timestamps).length > 0 && (
-                <Card title="Timestamps">
+                <Card title={t('toolPanels.metadata.timestamps')}>
                   {Object.entries(result.timestamps).map(([k, v]) => (
                     <Row key={k} label={k} value={v} />
                   ))}
                 </Card>
               )}
               {result.camera && Object.keys(result.camera).length > 0 && (
-                <Card title="Camera">
+                <Card title={t('toolPanels.metadata.camera')}>
                   {Object.entries(result.camera).map(([k, v]) => (
                     <Row key={k} label={k} value={v} />
                   ))}
                 </Card>
               )}
               {result.gps && (
-                <Card title="GPS Location">
-                  <Row label="Latitude" value={result.gps.lat} />
-                  <Row label="Longitude" value={result.gps.lng} />
-                  {result.gps.altitude && <Row label="Altitude" value={`${Math.round(result.gps.altitude)}m`} />}
+                <Card title={t('toolPanels.metadata.gpsLocation')}>
+                  <Row label={t('toolPanels.metadata.latitude')} value={result.gps.lat} />
+                  <Row label={t('toolPanels.metadata.longitude')} value={result.gps.lng} />
+                  {result.gps.altitude && <Row label={t('toolPanels.metadata.altitude')} value={`${Math.round(result.gps.altitude)}m`} />}
                   <div className="mt-3">
                     <a href={`https://www.google.com/maps?q=${result.gps.lat},${result.gps.lng}`} target="_blank" rel="noreferrer" className="btn-ghost h-8 px-3 text-[11px] inline-flex items-center gap-1">
-                      <ExternalLink size={11} /> Open in Maps
+                      <ExternalLink size={11} /> {t('toolPanels.metadata.openInMaps')}
                     </a>
                   </div>
                 </Card>
               )}
               {result.exif && Object.keys(result.exif).length > 0 && (
-                <Card title="EXIF / XMP Data">
+                <Card title={t('toolPanels.metadata.exifData')}>
                   {Object.entries(result.exif).slice(0, 30).map(([k, v]) => (
                     <Row key={k} label={k} value={String(v)} />
                   ))}
@@ -260,6 +265,7 @@ function MetadataPanel() {
 }
 
 function MacPanel() {
+  const { t } = useTranslations();
   const [addr, setAddr] = useState('');
   const [result, setResult] = useState<MacResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -275,16 +281,16 @@ function MacPanel() {
   };
   return (
     <div>
-      <Card title="MAC Address Vendor Lookup">
-        <div className="flex gap-2 flex-wrap"><Input value={addr} onChange={setAddr} placeholder="00:00:5e:00:53:af" onEnter={run} /><RunBtn loading={loading} label="Lookup" onClick={run} disabled={!addr.trim()} /></div>
+      <Card title={t('toolPanels.mac.title')}>
+        <div className="flex gap-2 flex-wrap"><Input value={addr} onChange={setAddr} placeholder={t('toolPanels.mac.placeholder')} onEnter={run} /><RunBtn loading={loading} label={t('toolPanels.mac.lookup')} onClick={run} disabled={!addr.trim()} /></div>
       </Card>
       {result && (
         result.error ? (
-          <ErrorCard message={result.error} />
+          <ErrorCard label={t('toolPanels.error')} message={result.error} />
         ) : (
           <Card>
-            <Row label="MAC Address" value={result.mac} />
-            <Row label="Vendor" value={result.vendor || 'Not found'} />
+            <Row label={t('toolPanels.mac.macAddress')} value={result.mac} />
+            <Row label={t('toolPanels.mac.vendor')} value={result.vendor || t('toolPanels.mac.notFound')} />
           </Card>
         )
       )}
@@ -293,6 +299,7 @@ function MacPanel() {
 }
 
 function HeadersPanel() {
+  const { t } = useTranslations();
   const [text, setText] = useState('');
   const [result, setResult] = useState<HeaderAnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -308,42 +315,42 @@ function HeadersPanel() {
   };
   return (
     <div>
-      <Card title="Email Header Analyzer · Paste raw headers">
+      <Card title={t('toolPanels.headers.title')}>
         <textarea value={text} onChange={e => setText(e.target.value)} rows={10}
-          placeholder="Paste raw email headers here (Gmail: 3-dot menu → Show original)…"
+          placeholder={t('toolPanels.headers.placeholder')}
           className="input-field font-mono text-[11px] resize-y leading-relaxed w-full mb-3" />
-        <RunBtn loading={loading} label="Analyse" onClick={run} disabled={!text.trim()} />
+        <RunBtn loading={loading} label={t('toolPanels.headers.analyse')} onClick={run} disabled={!text.trim()} />
       </Card>
       {result && !result.error && (
         <div>
-          <Card title="Message Metadata">
-            <Row label="From" value={result.from} />
-            <Row label="To" value={result.to} />
-            <Row label="Subject" value={result.subject} />
-            <Row label="Date" value={result.date} />
-            <Row label="Reply-To" value={result.reply_to} />
-            <Row label="X-Mailer" value={result.x_mailer} />
+          <Card title={t('toolPanels.headers.messageMetadata')}>
+            <Row label={t('toolPanels.headers.from')} value={result.from} />
+            <Row label={t('toolPanels.headers.to')} value={result.to} />
+            <Row label={t('toolPanels.headers.subject')} value={result.subject} />
+            <Row label={t('toolPanels.headers.date')} value={result.date} />
+            <Row label={t('toolPanels.headers.replyTo')} value={result.reply_to} />
+            <Row label={t('toolPanels.headers.xMailer')} value={result.x_mailer} />
           </Card>
-          <Card title="Authentication">
-            <Row label="SPF" value={result.spf} />
-            <Row label="DKIM" value={result.dkim} />
-            <Row label="DMARC" value={result.dmarc} />
+          <Card title={t('toolPanels.headers.authentication')}>
+            <Row label={t('toolPanels.headers.spf')} value={result.spf} />
+            <Row label={t('toolPanels.headers.dkim')} value={result.dkim} />
+            <Row label={t('toolPanels.headers.dmarc')} value={result.dmarc} />
           </Card>
           {result.origin_ip && (
-            <Card title="Origin">
+            <Card title={t('toolPanels.headers.origin')}>
               <Row label="IP" value={result.origin_ip} />
-              <Row label="rDNS" value={result.origin_rdns} />
+              <Row label={t('toolPanels.headers.rdns')} value={result.origin_rdns} />
               {result.origin_geo && (
                 <>
-                  <Row label="City" value={result.origin_geo.city} />
-                  <Row label="Country" value={result.origin_geo.country} />
-                  <Row label="Org" value={result.origin_geo.org} />
+                  <Row label={t('toolPanels.headers.city')} value={result.origin_geo.city} />
+                  <Row label={t('toolPanels.headers.country')} value={result.origin_geo.country} />
+                  <Row label={t('toolPanels.headers.org')} value={result.origin_geo.org} />
                 </>
               )}
             </Card>
           )}
           {result.spoofing_flags && result.spoofing_flags.length > 0 && (
-            <Card title="⚠ Spoofing Indicators">
+            <Card title={t('toolPanels.headers.spoofingIndicators')}>
               {result.spoofing_flags.map((f, i) => (
                 <div key={i} className="py-1.5 border-b border-border-1 last:border-0">
                   <span className="badge badge-high mr-2">{f.type}</span>
@@ -354,7 +361,7 @@ function HeadersPanel() {
           )}
         </div>
       )}
-      {result?.error && <ErrorCard message={result.error} />}
+      {result?.error && <ErrorCard label={t('toolPanels.error')} message={result.error} />}
     </div>
   );
 }
@@ -370,6 +377,7 @@ interface Props {
 }
 
 export function ToolPanels({ mode, onBack }: Props) {
+  const { t } = useTranslations();
   const [activePanel] = useState<ToolMode>(mode);
 
   return (
@@ -377,7 +385,7 @@ export function ToolPanels({ mode, onBack }: Props) {
       <div className="flex items-center gap-3 mb-5 pb-4 border-b border-border-1">
         <button onClick={onBack}
           className="flex items-center gap-1.5 text-[11px] text-text-3 hover:text-text-2 transition-colors px-2 py-1 rounded hover:bg-surface-3">
-          <ArrowLeft size={12} /> Back
+          <ArrowLeft size={12} /> {t('toolPanels.back')}
         </button>
         <div className="w-px h-4 bg-border-1" />
         <span className="text-[13px] font-bold text-text-1">{TOOL_TITLES[activePanel ?? mode ?? ''] || ''}</span>

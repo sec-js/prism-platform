@@ -14,27 +14,21 @@ const TYPE_COLOR: Record<ScanType, string> = {
 
 interface RecentScan { target: string; type: ScanType; ts: number; }
 
-const TIPS = [
-  'Scan domains, IPs, emails, phones & usernames',
-  'Toggle modules to customize each scan',
-  'Download HTML reports from scan results',
-  'Graph tab shows entity relationships',
-  'Map tab shows GeoIP location data',
-  'Use Dorks module to find exposed files',
-  'OPSEC score rates target exposure risk',
-];
+const SCAN_TYPES: ScanType[] = ['domain', 'ip', 'email', 'phone', 'username'];
 
-function useTip() {
-  const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => { setIdx(i => (i + 1) % TIPS.length); setVisible(true); }, 350);
-    }, 4000);
-    return () => clearInterval(iv);
-  }, []);
-  return { tip: TIPS[idx], visible };
+const MODULE_MAP: Record<ScanType, string[]> = {
+  domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion'],
+  ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
+  email:    ['emailrep', 'smtp', 'leaks'],
+  phone:    ['hlr'],
+  username: ['blackbird', 'maigret'],
+};
+
+interface Props {
+  onScan: (target: string, type: ScanType, modules: string[]) => void;
+  isRunning: boolean;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 function useRecentScans() {
@@ -58,50 +52,27 @@ function useRecentScans() {
   return { recents, add, clear };
 }
 
-const MODULE_MAP: Record<ScanType, { id: string; label: string }[]> = {
-  domain: [
-    { id: 'whois', label: 'WHOIS' }, { id: 'dns', label: 'DNS' },
-    { id: 'geoip', label: 'GeoIP' }, { id: 'cert_transparency', label: 'Cert CT' },
-    { id: 'website', label: 'Website' }, { id: 'wayback', label: 'Wayback' },
-    { id: 'shodan', label: 'Shodan' }, { id: 'virustotal', label: 'VirusTotal' },
-    { id: 'censys', label: 'Censys' }, { id: 'onion', label: 'Dark Web' },
-  ],
-  ip: [
-    { id: 'geoip', label: 'GeoIP' }, { id: 'shodan', label: 'Shodan' },
-    { id: 'virustotal', label: 'VirusTotal' }, { id: 'abuseipdb', label: 'AbuseIPDB' },
-    { id: 'censys', label: 'Censys' },
-  ],
-  email: [
-    { id: 'emailrep', label: 'Email Rep' }, { id: 'smtp', label: 'SMTP Verify' },
-    { id: 'leaks', label: 'Breach Check' },
-  ],
-  phone: [
-    { id: 'hlr', label: 'Phone Lookup' },
-  ],
-  username: [
-    { id: 'blackbird', label: 'Blackbird' }, { id: 'maigret', label: 'Maigret' },
-  ],
-};
-
-interface Props {
-  onScan: (target: string, type: ScanType, modules: string[]) => void;
-  isRunning: boolean;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
   const { t } = useTranslations();
   const [target, setTarget] = useState('');
   const [scanType, setScanType] = useState<ScanType>('domain');
-  const [modules, setModules] = useState<string[]>(MODULE_MAP.domain.map(m => m.id));
+  const [modules, setModules] = useState<string[]>(MODULE_MAP.domain);
   const [showModules, setShowModules] = useState(false);
-  const { tip, visible } = useTip();
+  const [tipIdx, setTipIdx] = useState(0);
+  const [tipVisible, setTipVisible] = useState(true);
   const { recents, add: addRecent, clear: clearRecents } = useRecentScans();
 
-  const handleTypeChange = (t: ScanType) => {
-    setScanType(t);
-    setModules(MODULE_MAP[t].map(m => m.id));
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setTipVisible(false);
+      setTimeout(() => { setTipIdx(i => (i + 1) % SCAN_TYPES.length); setTipVisible(true); }, 350);
+    }, 4000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const handleTypeChange = (type: ScanType) => {
+    setScanType(type);
+    setModules(MODULE_MAP[type]);
   };
 
   const toggleModule = (id: string) => {
@@ -121,6 +92,8 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
     handleTypeChange(r.type);
   };
 
+  const tip = t(`sidebar.tips.${tipIdx}`) || t('sidebar.tips.0');
+
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface-1 border-r border-border-1 flex flex-col h-screen transform transition-transform duration-200 ease-in-out md:relative md:z-auto md:transform-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1">✕</button>
@@ -139,17 +112,17 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
         <div>
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.scanType')}</label>
           <div className="grid grid-cols-3 gap-1">
-            {(['domain','ip','email','phone','username'] as ScanType[]).map(t => (
+            {SCAN_TYPES.map(type => (
               <button
-                key={t}
+                key={type}
                 type="button"
-                onClick={() => handleTypeChange(t)}
+                onClick={() => handleTypeChange(type)}
                 className={`text-[10px] font-semibold py-1.5 rounded transition-all ${
-                  scanType === t ? 'text-white' : 'bg-surface-3 text-text-3 hover:text-text-2'
+                  scanType === type ? 'text-white' : 'bg-surface-3 text-text-3 hover:text-text-2'
                 }`}
-                style={scanType === t ? { background: 'linear-gradient(135deg,#4f8ef7,#7c5cfc)' } : {}}
+                style={scanType === type ? { background: 'linear-gradient(135deg,#4f8ef7,#7c5cfc)' } : {}}
               >
-                {t.toUpperCase()}
+                {t(`sidebar.scanTypes.${type}`)}
               </button>
             ))}
           </div>
@@ -166,18 +139,18 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
 
         {showModules && (
           <div className="flex flex-wrap gap-1.5 animate-fade-in">
-            {MODULE_MAP[scanType].map(m => (
+            {MODULE_MAP[scanType].map(moduleId => (
               <button
-                key={m.id}
+                key={moduleId}
                 type="button"
-                onClick={() => toggleModule(m.id)}
+                onClick={() => toggleModule(moduleId)}
                 className={`text-[10px] px-2 py-1 rounded transition-all font-medium ${
-                  modules.includes(m.id)
+                  modules.includes(moduleId)
                     ? 'bg-blue/20 text-blue border border-blue/30'
                     : 'bg-surface-3 text-text-3 border border-border-1 hover:text-text-2'
                 }`}
               >
-                {m.label}
+                {t(`sidebar.modules.${moduleId}`)}
               </button>
             ))}
           </div>
@@ -235,7 +208,7 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
           <Lightbulb size={9} className="text-yellow opacity-60 mt-0.5 shrink-0" />
           <span
             className="text-[9px] text-text-3 leading-relaxed"
-            style={{ opacity: visible ? 0.6 : 0, transition: 'opacity 0.3s ease' }}
+            style={{ opacity: tipVisible ? 0.6 : 0, transition: 'opacity 0.3s ease' }}
           >
             {tip}
           </span>

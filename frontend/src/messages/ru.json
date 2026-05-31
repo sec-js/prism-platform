@@ -15,9 +15,45 @@
     "runScan": "Запустить",
     "scanning": "Сканирую…",
     "recent": "Недавние",
-    "noRecent": "Нет недавних сканов"
+    "noRecent": "Нет недавних сканов",
+    "scanTypes": {
+      "domain": "Домен",
+      "ip": "IP",
+      "email": "Почта",
+      "phone": "Телефон",
+      "username": "Юзернейм"
+    },
+    "modules": {
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "geoip": "GeoIP",
+      "cert_transparency": "Cert CT",
+      "website": "Веб-сайт",
+      "wayback": "Wayback",
+      "shodan": "Shodan",
+      "virustotal": "VirusTotal",
+      "abuseipdb": "AbuseIPDB",
+      "censys": "Censys",
+      "onion": "Даркнет",
+      "emailrep": "Репутация",
+      "smtp": "SMTP проверка",
+      "leaks": "Утечки",
+      "hlr": "Поиск телефона",
+      "blackbird": "Blackbird",
+      "maigret": "Maigret"
+    },
+    "tips": [
+      "Сканируй домены, IP, почту, телефоны и юзернеймы",
+      "Выбирай модули для настройки скана",
+      "Скачивай HTML-отчёты из результатов",
+      "Вкладка графа показывает связи сущностей",
+      "Вкладка карты показывает геолокацию",
+      "Используй Dorks для поиска открытых файлов",
+      "OPSEC-оценка показывает риск раскрытия"
+    ]
   },
   "idle": {
+    "title": "PRISM",
     "subtitle": "Платформа для разведки по открытым источникам",
     "stats": {
       "modules": "Модулей",
@@ -33,17 +69,91 @@
       "username": { "title": "Юзернейм",   "item1": "Blackbird · Maigret",   "item2": "50+ / 3000+ платформ",     "item3": "OPSEC-оценка" }
     },
     "standaloneTools": "Отдельные инструменты",
-    "tools": {
+"tools": {
       "metadata": { "label": "Метаданные файла",  "desc": "EXIF, GPS, PDF, DOCX" },
-      "headers":  { "label": "Заголовки письма",  "desc": "SPF, DKIM, маршрут" },
-      "crypto":   { "label": "Крипто-адрес",      "desc": "Bitcoin и Ethereum" },
-      "qr":       { "label": "Декодер QR",        "desc": "Декодирование и анализ" }
+      "headers":  { "label": "Заголовки письма",   "desc": "SPF, DKIM, маршрут" },
+      "crypto":   { "label": "Крипто-адрес",     "desc": "Bitcoin и Ethereum" },
+      "qr":       { "label": "Декодер QR",         "desc": "Декодирование и анализ" },
+      "mac":      { "label": "MAC Lookup",        "desc": "Поиск производителя" }
+    }
+  },
+  "toolPanels": {
+    "back": "Назад",
+    "error": "Ошибка",
+    "running": "Выполняется…",
+    "crypto": {
+      "title": "Поиск крипто-адреса · Bitcoin и Ethereum",
+      "placeholder": "1A1zP1…  /  0x742d…  /  bc1q…",
+      "lookup": "Искать",
+      "type": "Тип",
+      "address": "Адрес",
+      "balance": "Баланс",
+      "usd": "≈ USD",
+      "totalReceived": "Всего получено",
+      "totalSent": "Всего отправлено",
+      "transactions": "Транзакций",
+      "openExplorer": "Открыть проводник",
+      "notFound": "Не найдено"
     },
-    "demo": {
-      "line1": "Это публичное демо с ограниченными квотами API. Некоторые модули (Shodan, VirusTotal) могут быть ограничены частотой запросов.",
-      "line2Prefix": "Для полного доступа",
-      "selfHost": "разверни PRISM сам",
-      "line2Suffix": "со своими API-ключами."
+    "qr": {
+      "title": "Декодер QR-кода",
+      "hint": "PNG, JPG, WEBP поддерживаются",
+      "decode": "Декодировать QR",
+      "dropFile": "Перетащите файл или",
+      "browse": "выберите",
+      "clickToChange": "нажмите для изменения",
+      "content": "Содержимое",
+      "type": "Тип",
+      "openUrl": "Открыть URL"
+    },
+    "metadata": {
+      "title": "Метаданные файла и GEOINT",
+      "extract": "Извлечь метаданные",
+      "filename": "Имя файла",
+      "fileType": "Тип",
+      "size": "Размер",
+      "dimensions": "Размеры",
+      "author": "Автор / Copyright",
+      "software": "ПО",
+      "fileInfo": "Информация о файле",
+      "timestamps": "Временные метки",
+      "camera": "Камера",
+      "gpsLocation": "GPS-локация",
+      "latitude": "Широта",
+      "longitude": "Долгота",
+      "altitude": "Высота",
+      "openInMaps": "Открыть на карте",
+      "exifData": "EXIF / XMP данные"
+    },
+    "mac": {
+      "title": "Поиск MAC-адреса производителя",
+      "placeholder": "00:00:5e:00:53:af",
+      "lookup": "Искать",
+      "macAddress": "MAC-адрес",
+      "vendor": "Производитель",
+      "notFound": "Не найдено"
+    },
+    "headers": {
+      "title": "Анализ заголовков письма · Вставьте сырые заголовки",
+      "placeholder": "Вставьте сырые заголовки письма (Gmail: 3-точечное меню → Показать оригинал)…",
+      "analyse": "Анализировать",
+      "messageMetadata": "Метаданные сообщения",
+      "from": "От",
+      "to": "Кому",
+      "subject": "Тема",
+      "date": "Дата",
+      "replyTo": "Reply-To",
+      "xMailer": "X-Mailer",
+      "authentication": "Аутентификация",
+      "spf": "SPF",
+      "dkim": "DKIM",
+      "dmarc": "DMARC",
+      "origin": "Источник",
+      "rdns": "rDNS",
+      "city": "Город",
+      "country": "Страна",
+      "org": "Организация",
+      "spoofingIndicators": "⚠ Признаки спуфинга"
     }
   },
   "progress": {

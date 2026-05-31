@@ -15,9 +15,45 @@
     "runScan": "Run Scan",
     "scanning": "Scanning…",
     "recent": "Recent",
-    "noRecent": "No recent scans"
+    "noRecent": "No recent scans",
+    "scanTypes": {
+      "domain": "Domain",
+      "ip": "IP",
+      "email": "Email",
+      "phone": "Phone",
+      "username": "Username"
+    },
+    "modules": {
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "geoip": "GeoIP",
+      "cert_transparency": "Cert CT",
+      "website": "Website",
+      "wayback": "Wayback",
+      "shodan": "Shodan",
+      "virustotal": "VirusTotal",
+      "abuseipdb": "AbuseIPDB",
+      "censys": "Censys",
+      "onion": "Dark Web",
+      "emailrep": "Email Rep",
+      "smtp": "SMTP Verify",
+      "leaks": "Breach Check",
+      "hlr": "Phone Lookup",
+      "blackbird": "Blackbird",
+      "maigret": "Maigret"
+    },
+    "tips": [
+      "Scan domains, IPs, emails, phones & usernames",
+      "Toggle modules to customize each scan",
+      "Download HTML reports from scan results",
+      "Graph tab shows entity relationships",
+      "Map tab shows GeoIP location data",
+      "Use Dorks module to find exposed files",
+      "OPSEC score rates target exposure risk"
+    ]
   },
   "idle": {
+    "title": "PRISM",
     "subtitle": "Open Source Intelligence Platform",
     "stats": {
       "modules": "Modules",
@@ -33,17 +69,91 @@
       "username": { "title": "Username",    "item1": "Blackbird · Maigret",  "item2": "50+ / 3000+ platforms", "item3": "OPSEC Score" }
     },
     "standaloneTools": "Standalone Tools",
-    "tools": {
+"tools": {
       "metadata": { "label": "File Metadata",  "desc": "EXIF, GPS, PDF, DOCX" },
-      "headers":  { "label": "Email Headers",  "desc": "SPF, DKIM, routing hops" },
+      "headers":  { "label": "Email Headers",   "desc": "SPF, DKIM, routing hops" },
       "crypto":   { "label": "Crypto Address", "desc": "Bitcoin & Ethereum" },
-      "qr":       { "label": "QR Decode",      "desc": "Decode & analyze" }
+      "qr":       { "label": "QR Decode",       "desc": "Decode & analyze" },
+      "mac":      { "label": "MAC Lookup",      "desc": "Vendor lookup" }
+    }
+  },
+  "toolPanels": {
+    "back": "Back",
+    "error": "Error",
+    "running": "Running…",
+    "crypto": {
+      "title": "Crypto Address Lookup · Bitcoin & Ethereum",
+      "placeholder": "1A1zP1…  /  0x742d…  /  bc1q…",
+      "lookup": "Lookup",
+      "type": "Type",
+      "address": "Address",
+      "balance": "Balance",
+      "usd": "≈ USD",
+      "totalReceived": "Total Received",
+      "totalSent": "Total Sent",
+      "transactions": "Transactions",
+      "openExplorer": "Open Explorer",
+      "notFound": "Not found"
     },
-    "demo": {
-      "line1": "This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.",
-      "line2Prefix": "For full access,",
-      "selfHost": "self-host PRISM",
-      "line2Suffix": "with your own API keys."
+    "qr": {
+      "title": "QR Code Decoder",
+      "hint": "PNG, JPG, WEBP supported",
+      "decode": "Decode QR",
+      "dropFile": "Drop file here or",
+      "browse": "browse",
+      "clickToChange": "click to change",
+      "content": "Content",
+      "type": "Type",
+      "openUrl": "Open URL"
+    },
+    "metadata": {
+      "title": "File Metadata & GEOINT",
+      "extract": "Extract Metadata",
+      "filename": "Filename",
+      "fileType": "Type",
+      "size": "Size",
+      "dimensions": "Dimensions",
+      "author": "Author / Copyright",
+      "software": "Software",
+      "fileInfo": "File Info",
+      "timestamps": "Timestamps",
+      "camera": "Camera",
+      "gpsLocation": "GPS Location",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "altitude": "Altitude",
+      "openInMaps": "Open in Maps",
+      "exifData": "EXIF / XMP Data"
+    },
+    "mac": {
+      "title": "MAC Address Vendor Lookup",
+      "placeholder": "00:00:5e:00:53:af",
+      "lookup": "Lookup",
+      "macAddress": "MAC Address",
+      "vendor": "Vendor",
+      "notFound": "Not found"
+    },
+    "headers": {
+      "title": "Email Header Analyzer · Paste raw headers",
+      "placeholder": "Paste raw email headers here (Gmail: 3-dot menu → Show original)…",
+      "analyse": "Analyse",
+      "messageMetadata": "Message Metadata",
+      "from": "From",
+      "to": "To",
+      "subject": "Subject",
+      "date": "Date",
+      "replyTo": "Reply-To",
+      "xMailer": "X-Mailer",
+      "authentication": "Authentication",
+      "spf": "SPF",
+      "dkim": "DKIM",
+      "dmarc": "DMARC",
+      "origin": "Origin",
+      "rdns": "rDNS",
+      "city": "City",
+      "country": "Country",
+      "org": "Org",
+      "spoofingIndicators": "⚠ Spoofing Indicators"
     }
   },
   "progress": {

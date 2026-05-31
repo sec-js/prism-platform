@@ -15,9 +15,45 @@
     "runScan": "Scan starten",
     "scanning": "Scanne…",
     "recent": "Zuletzt",
-    "noRecent": "Keine kürzlichen Scans"
+    "noRecent": "Keine kürzlichen Scans",
+    "scanTypes": {
+      "domain": "Domain",
+      "ip": "IP",
+      "email": "E-Mail",
+      "phone": "Telefon",
+"username": "Nutzer"
+    },
+    "modules": {
+      "whois": "WHOIS",
+      "dns": "DNS",
+      "geoip": "GeoIP",
+      "cert_transparency": "Cert CT",
+      "website": "Website",
+      "wayback": "Wayback",
+      "shodan": "Shodan",
+      "virustotal": "VirusTotal",
+      "abuseipdb": "AbuseIPDB",
+      "censys": "Censys",
+      "onion": "Darknet",
+      "emailrep": "E-Mail-Rep",
+      "smtp": "SMTP-Prüfung",
+      "leaks": "Leak-Check",
+      "hlr": "Telefon-Suche",
+      "blackbird": "Blackbird",
+      "maigret": "Maigret"
+    },
+    "tips": [
+      "Scanne Domains, IPs, E-Mails, Telefone & Benutzernamen",
+      "Module auswählen um jeden Scan anzupassen",
+      "HTML-Berichte aus Scan-Ergebnissen herunterladen",
+      "Graph-Tab zeigt Entitätsbeziehungen",
+      "Map-Tab zeigt GeoIP-Standortdaten",
+      "Dorks-Modul nutzen um exponierte Dateien zu finden",
+      "OPSEC-Bewertung misst Ziel-Expositionrisiko"
+    ]
   },
   "idle": {
+    "title": "PRISM",
     "subtitle": "Open-Source-Intelligence-Plattform",
     "stats": {
       "modules": "Module",
@@ -30,20 +66,94 @@
       "domain":   { "title": "Domain / IP",  "item1": "WHOIS · DNS · GeoIP",       "item2": "Subdomains · Shodan",         "item3": "VirusTotal · Wayback" },
       "email":    { "title": "E-Mail",       "item1": "DNS-Reputation · SMTP",     "item2": "Leak-Check · Wegwerf-Adresse", "item3": "SPF · DKIM · DMARC" },
       "phone":    { "title": "Telefon",      "item1": "Validierung · Anbieter",    "item2": "Land · Rückwärtssuche" },
-      "username": { "title": "Benutzername", "item1": "Blackbird · Maigret",       "item2": "50+ / 3000+ Plattformen",      "item3": "OPSEC-Bewertung" }
+      "username": { "title": "Nutzer", "item1": "Blackbird · Maigret",       "item2": "50+ / 3000+ Plattformen",      "item3": "OPSEC-Bewertung" }
     },
     "standaloneTools": "Eigenständige Werkzeuge",
-    "tools": {
+"tools": {
       "metadata": { "label": "Datei-Metadaten",   "desc": "EXIF, GPS, PDF, DOCX" },
       "headers":  { "label": "E-Mail-Header",     "desc": "SPF, DKIM, Routing-Hops" },
       "crypto":   { "label": "Krypto-Adresse",    "desc": "Bitcoin und Ethereum" },
-      "qr":       { "label": "QR-Decoder",        "desc": "Decodieren & analysieren" }
+      "qr":       { "label": "QR-Decoder",        "desc": "Decodieren & analysieren" },
+      "mac":      { "label": "MAC Lookup",        "desc": "Hersteller-Suche" }
+    }
+  },
+  "toolPanels": {
+    "back": "Zurück",
+    "error": "Fehler",
+    "running": "Läuft…",
+    "crypto": {
+      "title": "Krypto-Adresssuche · Bitcoin & Ethereum",
+      "placeholder": "1A1zP1…  /  0x742d…  /  bc1q…",
+      "lookup": "Suchen",
+      "type": "Typ",
+      "address": "Adresse",
+      "balance": "Saldo",
+      "usd": "≈ USD",
+      "totalReceived": "Gesamt erhalten",
+      "totalSent": "Gesamt gesendet",
+      "transactions": "Transaktionen",
+      "openExplorer": "Explorer öffnen",
+      "notFound": "Nicht gefunden"
     },
-    "demo": {
-      "line1": "Dies ist eine öffentliche Demo mit begrenzten API-Kontingenten. Manche Module (Shodan, VirusTotal) können ratenbegrenzt sein.",
-      "line2Prefix": "Für vollen Zugriff",
-      "selfHost": "PRISM selbst hosten",
-      "line2Suffix": "mit eigenen API-Schlüsseln."
+    "qr": {
+      "title": "QR-Code-Decoder",
+      "hint": "PNG, JPG, WEBP unterstützt",
+      "decode": "QR decodieren",
+      "dropFile": "Datei hier ablegen oder",
+      "browse": "durchsuchen",
+      "clickToChange": "klicken zum Ändern",
+      "content": "Inhalt",
+      "type": "Typ",
+      "openUrl": "URL öffnen"
+    },
+    "metadata": {
+      "title": "Datei-Metadaten & GEOINT",
+      "extract": "Metadaten extrahieren",
+      "filename": "Dateiname",
+      "fileType": "Typ",
+      "size": "Größe",
+      "dimensions": "Abmessungen",
+      "author": "Autor / Copyright",
+      "software": "Software",
+      "fileInfo": "Datei-Info",
+      "timestamps": "Zeitstempel",
+      "camera": "Kamera",
+      "gpsLocation": "GPS-Standort",
+      "latitude": "Breitengrad",
+      "longitude": "Längengrad",
+      "altitude": "Höhe",
+      "openInMaps": "In Karten öffnen",
+      "exifData": "EXIF / XMP-Daten"
+    },
+    "mac": {
+      "title": "MAC-Adress-Herstellersuche",
+      "placeholder": "00:00:5e:00:53:af",
+      "lookup": "Suchen",
+      "macAddress": "MAC-Adresse",
+      "vendor": "Hersteller",
+      "notFound": "Nicht gefunden"
+    },
+    "headers": {
+      "title": "E-Mail-Header-Analysator · Rohdaten einfügen",
+      "placeholder": "Rohdaten der E-Mail-Header einfügen (Gmail: 3-Punkte-Menü → Original anzeigen)…",
+      "analyse": "Analysieren",
+      "messageMetadata": "Nachrichten-Metadaten",
+      "from": "Von",
+      "to": "An",
+      "subject": "Betreff",
+      "date": "Datum",
+      "replyTo": "Antwort-an",
+      "xMailer": "X-Mailer",
+      "authentication": "Authentifizierung",
+      "spf": "SPF",
+      "dkim": "DKIM",
+      "dmarc": "DMARC",
+      "origin": "Herkunft",
+      "rdns": "rDNS",
+      "city": "Stadt",
+      "country": "Land",
+      "org": "Organisation",
+      "spoofingIndicators": "⚠ Spoofing-Indikatoren"
     }
   },
   "progress": {
