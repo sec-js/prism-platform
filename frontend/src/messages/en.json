@@ -75,6 +75,12 @@
       "crypto":   { "label": "Crypto Address", "desc": "Bitcoin & Ethereum" },
       "qr":       { "label": "QR Decode",       "desc": "Decode & analyze" },
       "mac":      { "label": "MAC Lookup",      "desc": "Vendor lookup" }
+    },
+    "demo": {
+      "line1": "This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.",
+      "line2Prefix": "For full access,",
+      "selfHost": "self-host PRISM",
+      "line2Suffix": "with your own API keys."
     }
   },
   "toolPanels": {
