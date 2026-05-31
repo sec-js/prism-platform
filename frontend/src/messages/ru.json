@@ -75,6 +75,12 @@
       "crypto":   { "label": "Крипто-адрес",     "desc": "Bitcoin и Ethereum" },
       "qr":       { "label": "Декодер QR",         "desc": "Декодирование и анализ" },
       "mac":      { "label": "MAC Lookup",        "desc": "Поиск производителя" }
+    },
+    "demo": {
+      "line1": "Это публичное демо с ограниченными квотами API. Некоторые модули (Shodan, VirusTotal) могут быть ограничены частотой запросов.",
+      "line2Prefix": "Для полного доступа",
+      "selfHost": "разверни PRISM сам",
+      "line2Suffix": "со своими API-ключами."
     }
   },
   "toolPanels": {
