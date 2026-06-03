@@ -42,7 +42,7 @@ from web.security import (
 _disable_docs = os.getenv("DISABLE_DOCS", "").lower() in ("1", "true", "yes")
 app = FastAPI(
     title="OSINT Toolkit",
-    version="2.2.0",
+    version="2.3.0",
     docs_url=None if _disable_docs else "/docs",
     redoc_url=None if _disable_docs else "/redoc",
     openapi_url=None if _disable_docs else "/openapi.json",
