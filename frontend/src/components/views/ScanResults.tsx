@@ -110,6 +110,10 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
         } else if (bounds.length > 1) {
           mapRef.current.fitBounds(bounds, { padding: [24, 24] });
         }
+
+        requestAnimationFrame(() => {
+          if (!cancelled && mapRef.current) mapRef.current.invalidateSize();
+        });
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Failed to render map'));
 

@@ -514,6 +514,43 @@ CAT_LABELS = {
     "web_security": "Web Security",
 }
 
+_FONTS_DIR = os.path.join(os.path.dirname(__file__), "fonts")
+_PDF_FONTS = (
+    ("DejaVuSans", "DejaVuSans.ttf", "DejaVuSans-Bold.ttf"),
+    ("DejaVuSansMono", "DejaVuSansMono.ttf", "DejaVuSansMono-Bold.ttf"),
+)
+_pdf_fonts_registered = False
+
+
+def _register_pdf_fonts() -> None:
+    global _pdf_fonts_registered
+    if _pdf_fonts_registered:
+        return
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfbase.pdfmetrics import registerFontFamily
+    import xhtml2pdf.default as xhtml2pdf_default
+
+    for family, regular, bold in _PDF_FONTS:
+        regular_path = os.path.join(_FONTS_DIR, regular)
+        bold_path = os.path.join(_FONTS_DIR, bold)
+        if not os.path.exists(regular_path):
+            continue
+        pdfmetrics.registerFont(TTFont(family, regular_path))
+        bold_name = family
+        if os.path.exists(bold_path):
+            bold_name = f"{family}-Bold"
+            pdfmetrics.registerFont(TTFont(bold_name, bold_path))
+        registerFontFamily(family, normal=family, bold=bold_name,
+                           italic=family, boldItalic=bold_name)
+
+        key = family.lower()
+        xhtml2pdf_default.DEFAULT_FONT[key] = family
+        xhtml2pdf_default.DEFAULT_FONT[f"{key}-bold"] = bold_name
+        xhtml2pdf_default.DEFAULT_FONT[f"{key}-oblique"] = family
+        xhtml2pdf_default.DEFAULT_FONT[f"{key}-boldoblique"] = bold_name
+    _pdf_fonts_registered = True
+
 
 def generate_html_report(
     target: str,
@@ -562,20 +599,20 @@ PDF_REPORT_TEMPLATE = r"""<!DOCTYPE html>
 <title>PRISM Report — {{ target }}</title>
 <style>
   @page { size: A4; margin: 1.6cm 1.4cm; }
-  body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #1a1f2b; }
+  body { font-family: 'DejaVuSans', Helvetica, Arial, sans-serif; font-size: 10pt; color: #1a1f2b; }
   h1 { font-size: 18pt; margin: 0 0 4pt 0; color: #4f8ef7; }
   h2 { font-size: 12pt; margin: 14pt 0 6pt 0; color: #1a1f2b;
        border-bottom: 1pt solid #d0d7de; padding-bottom: 3pt; }
   h3 { font-size: 11pt; margin: 10pt 0 4pt 0; color: #4f5563; }
   .muted { color: #6e7681; font-size: 9pt; }
-  .target { font-family: Courier, monospace; font-size: 11pt; color: #1a1f2b; }
+  .target { font-family: 'DejaVuSansMono', Courier, monospace; font-size: 11pt; color: #1a1f2b; }
 
   table { width: 100%; border-collapse: collapse; margin: 4pt 0 8pt 0; }
   td, th { padding: 4pt 6pt; vertical-align: top; font-size: 9.5pt;
            border-bottom: 0.5pt solid #e1e6ec; }
   th { background: #f4f6f9; text-align: left; font-weight: bold; color: #4f5563; }
   td.label { color: #6e7681; width: 32%; }
-  td.value { color: #1a1f2b; font-family: Courier, monospace; font-size: 9pt; word-break: break-all; }
+  td.value { color: #1a1f2b; font-family: 'DejaVuSansMono', Courier, monospace; font-size: 9pt; word-break: break-all; }
 
   .score-box { background: #f4f6f9; border: 1pt solid #d0d7de; border-radius: 4pt;
                padding: 10pt 12pt; margin-bottom: 10pt; }
@@ -774,6 +811,8 @@ def generate_pdf_report(
         raise ImportError(
             "xhtml2pdf is required for PDF export. Install with: pip install xhtml2pdf"
         ) from e
+
+    _register_pdf_fonts()
 
     env = Environment(loader=BaseLoader(), autoescape=True)
     env.filters["tojson"] = lambda v: json.dumps(v)
