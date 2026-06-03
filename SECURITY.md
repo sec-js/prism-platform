@@ -6,17 +6,17 @@ PRISM is a self-hosted OSINT platform. Even though every scan it performs is **p
 
 | Version | Supported          |
 |---------|--------------------|
-| 2.2.x   | Active support     |
-| 2.1.x   | Security fixes only |
-| < 2.1   | Unsupported        |
+| 2.3.x   | Active support     |
+| 2.2.x   | Security fixes only |
+| < 2.2   | Unsupported        |
 
-Please upgrade to the latest `2.2.x` release before reporting any issue.
+Please upgrade to the latest `2.3.x` release before reporting any issue.
 
 ## Reporting a Vulnerability
 
 **Please do not open public GitHub issues for security vulnerabilities.**
 
-- Email: `security@getprism.su` (preferred)
+- Email: `entropq2@gmail.com` (preferred)
 - Or: open a private security advisory via GitHub →
   `Security` → `Report a vulnerability`
 

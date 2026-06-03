@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -24,6 +25,7 @@ import config
 from modules.graph_builder import build_graph
 from modules.opsec_score import score_from_results
 from modules.report_generator import generate_html_report, generate_pdf_report
+from modules.webhook_formatters import format_slack, format_discord
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
@@ -46,7 +48,7 @@ app = FastAPI(
     openapi_url=None if _disable_docs else "/openapi.json",
 )
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, lambda req, exc: JSONResponse({"error": "Rate limit exceeded. Slow down."}, status_code=429))
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 _STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if os.path.isdir(_STATIC_DIR):
@@ -242,6 +244,12 @@ def _send_webhook(url: str, payload: Dict[str, Any]) -> None:
         msg = str(e)
         if "cannot be resolved" not in msg and "did not resolve" not in msg:
             return
+
+    webhook_format = os.environ.get("WEBHOOK_FORMAT", "raw")
+    if webhook_format == "slack":
+        payload = format_slack(payload)
+    elif webhook_format == "discord":
+        payload = format_discord(payload)
 
     headers = {"Content-Type": "application/json", "User-Agent": "PRISM-Webhook/2.1.2"}
     if WEBHOOK_SECRET:

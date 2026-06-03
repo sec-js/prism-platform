@@ -43,8 +43,11 @@ and how to extend it with new modules.
 | `modules/opsec_score.py` | Aggregated 0–100 exposure score |
 | `modules/graph_builder.py` | Entity → relationship graph data |
 | `modules/report_generator.py` | Jinja2 HTML + xhtml2pdf PDF reports |
-| `frontend/src/components` | UI: Sidebar, Topbar, ScanProgress, ScanResults |
-| `frontend/src/lib/i18n.tsx` | Lightweight i18n provider (en + ru + de) |
+| `modules/webhook_formatters.py` | Slack Block Kit / Discord embed formatters |
+| `cli.py` | Standalone CLI for headless scans |
+| `__main__.py` | `python -m prism` entry point |
+| `frontend/src/components` | UI: Sidebar, Topbar, ScanProgress, ScanResults, ScanComparison |
+| `frontend/src/lib/i18n.tsx` | Lightweight i18n provider (en + ru + de + fr + es) |
 | `frontend/src/messages/*.json` | Locale string files |
 | `tests/` | pytest suite, monkeypatched (no live API calls) |
 | `docs/` | Architecture, screenshots, demo gifs |
@@ -190,7 +193,7 @@ The frontend ships a lightweight provider in `frontend/src/lib/i18n.tsx`:
 
 - Locale stored in `localStorage` (`prism_locale`)
 - Auto-detects from `navigator.language` on first run
-- Strings live in `frontend/src/messages/{en,ru}.json`
+- Strings live in `frontend/src/messages/{en,ru,de,fr,es}.json`
 - `useTranslations()` hook exposes `{ locale, setLocale, t }`
 
 Adding a new language is as simple as dropping a new JSON file with the same

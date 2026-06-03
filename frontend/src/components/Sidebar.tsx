@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Play, Loader2, ChevronDown, ChevronUp, Lightbulb, RotateCcw, Trash2 } from 'lucide-react';
+import { Play, Loader2, ChevronDown, ChevronUp, Lightbulb, RotateCcw, Trash2, History, GitCompare } from 'lucide-react';
 import { useTranslations } from '@/lib/i18n';
+import { listScans, type ScanListItem } from '@/lib/api';
 import type { ScanType } from '@/lib/types';
 
 const TYPE_COLOR: Record<ScanType, string> = {
@@ -26,6 +27,8 @@ const MODULE_MAP: Record<ScanType, string[]> = {
 
 interface Props {
   onScan: (target: string, type: ScanType, modules: string[]) => void;
+  onLoadScan?: (scanId: string) => void;
+  onCompare?: (a: string, b: string) => void;
   isRunning: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -52,7 +55,7 @@ function useRecentScans() {
   return { recents, add, clear };
 }
 
-export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
+export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onClose }: Props) {
   const { t } = useTranslations();
   const [target, setTarget] = useState('');
   const [scanType, setScanType] = useState<ScanType>('domain');
@@ -60,6 +63,11 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
   const [showModules, setShowModules] = useState(false);
   const [tipIdx, setTipIdx] = useState(0);
   const [tipVisible, setTipVisible] = useState(true);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<ScanListItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSelection, setCompareSelection] = useState<string[]>([]);
   const { recents, add: addRecent, clear: clearRecents } = useRecentScans();
 
   useEffect(() => {
@@ -69,6 +77,29 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
     }, 4000);
     return () => clearInterval(iv);
   }, []);
+
+  const fetchHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const items = await listScans();
+      setHistory(items);
+    } catch {
+      setHistory([]);
+    }
+    setHistoryLoading(false);
+  };
+
+  const toggleHistory = () => {
+    const next = !showHistory;
+    setShowHistory(next);
+    if (next) fetchHistory();
+  };
+
+  const toggleCompareSelect = (id: string) => {
+    setCompareSelection(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 2 ? [...prev, id] : [prev[1], id]
+    );
+  };
 
   const handleTypeChange = (type: ScanType) => {
     setScanType(type);
@@ -201,6 +232,83 @@ export function Sidebar({ onScan, isRunning, isOpen, onClose }: Props) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="border-t border-border-1 px-4 py-2">
+        <button
+          onClick={toggleHistory}
+          className="flex items-center justify-between w-full text-[10px] font-semibold text-text-3 uppercase tracking-wider hover:text-text-2 transition-colors mb-1"
+        >
+          <span className="flex items-center gap-1.5"><History size={10} /> History</span>
+          {showHistory ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        </button>
+        {showHistory && (
+          <div className="animate-fade-in">
+            {compareMode && compareSelection.length === 2 && onCompare && (
+              <button
+                onClick={() => { onCompare(compareSelection[0], compareSelection[1]); setCompareMode(false); setCompareSelection([]); }}
+                className="btn-primary w-full text-[10px] py-1 mb-2"
+              >
+                <GitCompare size={10} /> Compare selected
+              </button>
+            )}
+            <div className="flex items-center gap-1 mb-1.5">
+              <button
+                onClick={() => { setCompareMode(v => !v); setCompareSelection([]); }}
+                className={`text-[9px] px-1.5 py-0.5 rounded transition-all font-medium ${
+                  compareMode ? 'bg-purple/20 text-purple border border-purple/30' : 'bg-surface-3 text-text-3 border border-border-1 hover:text-text-2'
+                }`}
+              >
+                <span className="flex items-center gap-1"><GitCompare size={8} /> Compare</span>
+              </button>
+              <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto">
+                <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
+              </button>
+            </div>
+            {historyLoading ? (
+              <div className="flex justify-center py-2"><Loader2 size={14} className="spin text-text-3" /></div>
+            ) : history.length === 0 ? (
+              <div className="text-[10px] text-text-3 opacity-40 italic">No scan history</div>
+            ) : (
+              <div className="flex flex-col gap-0.5 max-h-40 overflow-y-auto">
+                {history.map(h => {
+                  const selected = compareSelection.includes(h.scan_id);
+                  return (
+                    <button
+                      key={h.scan_id}
+                      onClick={() => compareMode ? toggleCompareSelect(h.scan_id) : onLoadScan?.(h.scan_id)}
+                      className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded transition-colors group ${
+                        selected ? 'bg-purple/15 border border-purple/30' : 'hover:bg-surface-3'
+                      }`}
+                    >
+                      {compareMode && (
+                        <span className={`w-3 h-3 rounded-sm border shrink-0 flex items-center justify-center text-[8px] ${
+                          selected ? 'bg-purple border-purple text-white' : 'border-border-1'
+                        }`}>
+                          {selected ? '✓' : ''}
+                        </span>
+                      )}
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase shrink-0 ${
+                        TYPE_COLOR[h.scan_type as ScanType] || 'bg-surface-3 text-text-3'
+                      }`}>
+                        {h.scan_type.slice(0, 2)}
+                      </span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[11px] text-text-2 truncate font-mono group-hover:text-text-1 transition-colors">
+                          {h.target}
+                        </span>
+                        <span className="text-[8px] text-text-3">
+                          {h.status === 'completed' ? '✓' : h.status === 'running' ? '…' : '✗'}{' '}
+                          {new Date(h.started_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="border-t border-border-1 px-3 py-2.5">

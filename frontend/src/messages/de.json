@@ -173,6 +173,8 @@
     "htmlReport": "HTML-Bericht",
     "pdfReport": "PDF-Bericht",
     "jsonReport": "JSON herunterladen",
+    "csvReport": "CSV herunterladen",
+    "mdReport": "Markdown herunterladen",
     "tabs": {
       "findings": "Befunde",
       "whois": "WHOIS",
@@ -221,19 +223,26 @@
     "map": { "title": "IP-Geolokationskarte", "ip": "IP", "location": "Standort", "organization": "Organisation", "coordinates": "Koordinaten", "loading": "Karte wird geladen…", "noData": "Keine Geolokationsdaten verfügbar", "moreFmt": "{n} Standorte gefunden", "precision": "Genauigkeit", "approximate": "Ungefähr (regional, nicht punktgenau)" },
     "graph": { "title": "Entitätsgraph", "loading": "Graph wird geladen…", "empty": "Keine Graphdaten für diesen Scan" },
     "json": { "title": "Rohe JSON-Daten", "show": "Rohdaten anzeigen", "hide": "Rohdaten verbergen" },
-    "ai": { "title": "KI-OSINT-Analyse · Nvidia Nemotron", "chatTitle": "Frag die KI", "generate": "KI-Zusammenfassung erstellen", "generating": "Analyse wird erstellt…", "model": "Modell", "regenerate": "Neu generieren", "placeholder": "Frag etwas zu diesem Scan…" }
+    "ai": { "title": "KI-OSINT-Analyse · Nvidia Nemotron", "chatTitle": "Frag die KI", "generate": "KI-Zusammenfassung erstellen", "generating": "Analyse wird erstellt…", "model": "Modell", "regenerate": "Neu generieren", "placeholder": "Frag etwas zu diesem Scan…" },
+    "duration": "Abgeschlossen in {duration}",
+    "copyAllEmails": "Alle E-Mails kopieren",
+    "emailsCopied": "E-Mails kopiert!",
+    "filterPlatforms": "Plattformen filtern..."
   },
   "common": {
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "copyFailed": "Kopieren fehlgeschlagen",
     "loading": "Lädt…",
-    "error": "Fehler"
+    "error": "Fehler",
+    "backToTop": "Nach oben"
   },
   "lang": {
     "label": "Sprache",
     "en": "EN",
     "ru": "RU",
-    "de": "DE"
+    "de": "DE",
+    "fr": "FR",
+    "es": "ES"
   }
 }

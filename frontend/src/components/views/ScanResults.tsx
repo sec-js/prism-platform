@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp } from 'lucide-react';
+import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding } from '@/lib/types';
 import { fetchReportBlob, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
@@ -415,6 +415,145 @@ export function ScanResults({ scan }: Props) {
     }
   };
 
+  const downloadCsv = () => {
+    try {
+      const rows: string[][] = [['Module', 'Key', 'Value']];
+      const flatten = (obj: unknown, prefix: string) => {
+        if (obj === null || obj === undefined) return;
+        if (Array.isArray(obj)) {
+          obj.forEach((item, i) => flatten(item, `${prefix}[${i}]`));
+        } else if (typeof obj === 'object') {
+          for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+            flatten(v, prefix ? `${prefix}.${k}` : k);
+          }
+        } else {
+          const parts = prefix.split('.');
+          const mod = parts[0] || '';
+          const key = parts.slice(1).join('.') || prefix;
+          const val = String(obj).replace(/"/g, '""');
+          rows.push([mod, key, `"${val}"`]);
+        }
+      };
+      flatten(scan.results, '');
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prism-${filenameSegment(scan.target)}-${filenameSegment(scan.id)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : 'CSV download failed');
+    }
+  };
+
+  const downloadMarkdown = () => {
+    try {
+      const lines: string[] = [];
+      lines.push(`# PRISM Scan Report`);
+      lines.push(`**Target:** ${scan.target}`);
+      lines.push(`**Type:** ${scan.scan_type}`);
+      if (scan.started_at) lines.push(`**Started:** ${scan.started_at.slice(0, 19).replace('T', ' ')}`);
+      if (scan.completed_at) lines.push(`**Completed:** ${scan.completed_at.slice(0, 19).replace('T', ' ')}`);
+      lines.push('');
+      if (opsec) {
+        lines.push(`## OPSEC Score: ${opsec.score}/100 (${opsec.risk_level})`);
+        for (const [k, cat] of Object.entries(opsec.categories)) {
+          lines.push(`- **${k.replace(/_/g, ' ')}:** ${cat.score}/${cat.max} (${cat.percent}%)`);
+        }
+        lines.push('');
+      }
+      if (opsec?.all_findings?.length) {
+        lines.push('## Security Findings');
+        for (const f of opsec.all_findings) {
+          lines.push(`- [${f.severity}] ${f.message} (-${f.deduction} pts)`);
+        }
+        lines.push('');
+      }
+      if (r.whois && !r.whois.error) {
+        lines.push('## WHOIS');
+        if (r.whois.registrar) lines.push(`- Registrar: ${r.whois.registrar}`);
+        if (r.whois.org) lines.push(`- Organization: ${r.whois.org}`);
+        if (r.whois.country) lines.push(`- Country: ${r.whois.country}`);
+        if (r.whois.creation_date) lines.push(`- Created: ${r.whois.creation_date.slice(0, 10)}`);
+        lines.push('');
+      }
+      if (r.dns?.records) {
+        lines.push('## DNS Records');
+        for (const [type, recs] of Object.entries(r.dns.records)) {
+          if (Array.isArray(recs) && recs.length) {
+            lines.push(`### ${type}`);
+            recs.forEach(rec => lines.push(`- ${typeof rec === 'object' ? JSON.stringify(rec) : rec}`));
+          }
+        }
+        lines.push('');
+      }
+      if (r.cert_transparency?.subdomains?.length) {
+        lines.push(`## Subdomains (${r.cert_transparency.subdomains.length})`);
+        r.cert_transparency.subdomains.forEach(s => lines.push(`- ${s}`));
+        lines.push('');
+      }
+      if (r.blackbird?.some(b => b.status === 'found')) {
+        lines.push('## Accounts Found');
+        lines.push('| Platform | URL |');
+        lines.push('|----------|-----|');
+        r.blackbird.filter(b => b.status === 'found').forEach(b => lines.push(`| ${b.site} | ${b.url} |`));
+        lines.push('');
+      }
+      const md = lines.join('\n');
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prism-${filenameSegment(scan.target)}-${filenameSegment(scan.id)}.md`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : 'Markdown download failed');
+    }
+  };
+
+  const scanDuration = (() => {
+    if (!scan.started_at || !scan.completed_at) return null;
+    const ms = new Date(scan.completed_at).getTime() - new Date(scan.started_at).getTime();
+    if (ms < 0 || !Number.isFinite(ms)) return null;
+    if (ms < 1000) return `${ms}ms`;
+    const s = ms / 1000;
+    return s < 60 ? `${s.toFixed(1)}s` : `${Math.floor(s / 60)}m ${Math.round(s % 60)}s`;
+  })();
+
+  const allEmails = (() => {
+    const set = new Set<string>();
+    if (r.whois?.emails) r.whois.emails.forEach(e => set.add(e));
+    if (r.emailrep?.email) set.add(r.emailrep.email);
+    if (r.breaches?.breaches) {
+      for (const b of r.breaches.breaches) {
+        if (typeof b === 'string' && b.includes('@')) set.add(b);
+        if (typeof b === 'object' && b && 'email' in b) set.add((b as any).email);
+      }
+    }
+    // Scan target if it looks like email
+    if (scan.scan_type === 'email' && scan.target?.includes('@')) set.add(scan.target);
+    return Array.from(set);
+  })();
+
+  const copyAllEmails = async () => {
+    if (!allEmails.length) return;
+    try {
+      await navigator.clipboard.writeText(allEmails.join('\n'));
+      showToast(i18n('results.emailsCopied') || 'Emails copied!');
+    } catch {
+      showToast(i18n('common.copyFailed') || 'Copy failed');
+    }
+  };
+
+  const [accountFilter, setAccountFilter] = useState('');
+
   const visibleTabs = TABS.filter(t => {
     if (t.id === 'whois') return r.whois && !r.whois.error;
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
@@ -431,6 +570,24 @@ export function ScanResults({ scan }: Props) {
     return true;
   });
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const idx = visibleTabs.findIndex(t => t.id === tab);
+        if (idx === -1) return;
+        const next = e.key === 'ArrowRight'
+          ? (idx + 1) % visibleTabs.length
+          : (idx - 1 + visibleTabs.length) % visibleTabs.length;
+        setTab(visibleTabs[next].id);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [tab, visibleTabs]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-48px)] animate-fade-in">
       <div className="px-4 sm:px-5 py-3 border-b border-border-1 bg-surface-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -443,6 +600,9 @@ export function ScanResults({ scan }: Props) {
             <span className="badge badge-info">{scan.scan_type?.toUpperCase()}</span>
             {scan.started_at && (
               <span className="text-[10px] text-text-3 hidden sm:inline">{scan.started_at.slice(0, 19).replace('T', ' ')}</span>
+            )}
+            {scanDuration && (
+              <span className="text-[10px] text-green font-medium">{i18n('results.duration').replace('{duration}', scanDuration) !== `results.duration` ? i18n('results.duration').replace('{duration}', scanDuration) : `Completed in ${scanDuration}`}</span>
             )}
           </div>
         </div>
@@ -459,6 +619,20 @@ export function ScanResults({ scan }: Props) {
             className="btn-ghost text-[11px] h-8 px-3">
             <Download size={11} /> {i18n('results.jsonReport')}
           </button>
+          <button type="button" onClick={downloadCsv}
+            className="btn-ghost text-[11px] h-8 px-3">
+            <FileSpreadsheet size={11} /> {i18n('results.csvReport') !== 'results.csvReport' ? i18n('results.csvReport') : 'CSV'}
+          </button>
+          <button type="button" onClick={downloadMarkdown}
+            className="btn-ghost text-[11px] h-8 px-3">
+            <FileText size={11} /> {i18n('results.mdReport') !== 'results.mdReport' ? i18n('results.mdReport') : 'Markdown'}
+          </button>
+          {allEmails.length >= 2 && (
+            <button type="button" onClick={copyAllEmails}
+              className="btn-ghost text-[11px] h-8 px-3">
+              <Mail size={11} /> {i18n('results.copyAllEmails') !== 'results.copyAllEmails' ? i18n('results.copyAllEmails') : 'Copy emails'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -589,12 +763,24 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'accounts' && (
           <Card title="Username Search">
+            <div className="mb-3">
+              <div className="relative">
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-3" />
+                <input
+                  type="text"
+                  value={accountFilter}
+                  onChange={e => setAccountFilter(e.target.value)}
+                  placeholder={i18n('results.filterPlatforms') !== 'results.filterPlatforms' ? i18n('results.filterPlatforms') : 'Filter platforms...'}
+                  className="input-field w-full pl-9 text-[12px] h-9"
+                />
+              </div>
+            </div>
             <div className="overflow-x-auto -mx-4 px-4">
             <table className="w-full text-[12px] min-w-[400px]">
               <thead><tr className="text-left text-text-3 text-[10px] uppercase tracking-wider border-b border-border-1">
                 <th className="pb-2">Platform</th><th className="pb-2">URL</th><th className="pb-2 text-right">Time</th>
               </tr></thead>
-              <tbody>{r.blackbird?.filter(b => b.status === 'found').map(b => (
+              <tbody>{r.blackbird?.filter(b => b.status === 'found' && (!accountFilter || b.site.toLowerCase().includes(accountFilter.toLowerCase()))).map(b => (
                 <tr key={b.site} className="border-b border-border-1 last:border-0">
                   <td className="py-2 font-medium text-text-1">{b.site}</td>
                   <td className="py-2">

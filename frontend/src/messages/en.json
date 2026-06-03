@@ -173,6 +173,8 @@
     "htmlReport": "HTML Report",
     "pdfReport": "PDF Report",
     "jsonReport": "Download JSON",
+    "csvReport": "Download CSV",
+    "mdReport": "Download Markdown",
     "tabs": {
       "findings": "Findings",
       "whois": "WHOIS",
@@ -221,19 +223,26 @@
     "map": { "title": "IP Geolocation Map", "ip": "IP", "location": "Location", "organization": "Organization", "coordinates": "Coordinates", "loading": "Loading map…", "noData": "No geolocation data available", "moreFmt": "{n} locations found", "precision": "Precision", "approximate": "Approximate (regional, not exact)" },
     "graph": { "title": "Entity Graph", "loading": "Loading graph…", "empty": "No graph data available for this scan" },
     "json": { "title": "Raw JSON Results", "show": "Show raw data", "hide": "Hide raw data" },
-    "ai": { "title": "AI OSINT Analysis · Nvidia Nemotron", "chatTitle": "Ask the AI", "generate": "Generate AI Summary", "generating": "Generating analysis…", "model": "Model", "regenerate": "Regenerate", "placeholder": "Ask anything about this scan…" }
+    "ai": { "title": "AI OSINT Analysis · Nvidia Nemotron", "chatTitle": "Ask the AI", "generate": "Generate AI Summary", "generating": "Generating analysis…", "model": "Model", "regenerate": "Regenerate", "placeholder": "Ask anything about this scan…" },
+    "duration": "Completed in {duration}",
+    "copyAllEmails": "Copy all emails",
+    "emailsCopied": "Emails copied!",
+    "filterPlatforms": "Filter platforms..."
   },
   "common": {
     "copy": "Copy",
     "copied": "Copied!",
     "copyFailed": "Copy failed",
     "loading": "Loading…",
-    "error": "Error"
+    "error": "Error",
+    "backToTop": "Back to top"
   },
   "lang": {
     "label": "Language",
     "en": "EN",
     "ru": "RU",
-    "de": "DE"
+    "de": "DE",
+    "fr": "FR",
+    "es": "ES"
   }
 }

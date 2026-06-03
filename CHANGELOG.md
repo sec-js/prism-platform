@@ -6,6 +6,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.3.0] — 2026-06-03
+
+### Added
+- **Scan history** — collapsible History panel in sidebar fetches past scans from `/api/scans` and loads results on click (#38).
+- **Scan comparison mode** — select two scans from history and view a side-by-side diff table with added/removed/changed fields (#58).
+- **CSV export** — flattened Module/Key/Value CSV download with BOM for Excel compatibility (#43).
+- **Markdown export** — structured `.md` report with OPSEC score, WHOIS, DNS, subdomains, and accounts (#55).
+- **French (FR) locale** — full UI translation including new toolPanels, tips, scanTypes, and module labels (#14).
+- **Spanish (ES) locale** — full UI translation with the same coverage (#28).
+- **Standalone CLI** — `python cli.py scan <target>` with `--json`, `--html`, `--pdf` output, module selection, and auto-type detection (#39).
+- **Slack/Discord webhook formatters** — `WEBHOOK_FORMAT=slack|discord` env var transforms payloads to Block Kit or embed format (#35).
+- **Rate-limit response headers** — `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` via slowapi built-in handler (#37).
+- **Keyboard shortcuts** — ArrowLeft/ArrowRight cycles result tabs, skips inputs (#33).
+- **Copy all emails** — aggregates emails from WHOIS, emailrep, breaches, and scan target into one-click copy (#34).
+- **Scan duration** — displays elapsed time in results header (#29).
+- **Username filter** — search input in accounts tab to filter platforms (#44).
+- **Loading skeleton** — pulse-animated placeholder shown during scan progress (#54).
+- **ESLint config** — `next/core-web-vitals` ruleset for frontend (#36).
+- **GitHub PR template** — standardized pull request description format (#48).
+
+### Changed
+- Sidebar refactored to use i18n module labels (`sidebar.modules.<id>`) and localized scan type buttons.
+- `_rate_limit_exceeded_handler` replaces inline lambda for proper 429 response headers.
+
+---
+
 ## [2.2.0] — 2026-05-26
 
 ### Added

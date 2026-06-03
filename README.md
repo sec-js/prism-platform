@@ -6,7 +6,7 @@
 **[Live Demo](https://getprism.su)** · **[Docker Quick Start](#docker-recommended)** · **[Architecture](docs/ARCHITECTURE.md)** · **[Security](SECURITY.md)** · **[Changelog](CHANGELOG.md)**
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.2.0-7c5cfc?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-7c5cfc?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-102%20passing-3fb950?style=flat-square)](#running-tests)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
@@ -31,9 +31,11 @@
 - **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
 - **Real-time dashboard** — WebSocket-driven scan progress with **module-level progress bar (5/8 · 62%)**, interactive entity relationship graph, **multi-marker Leaflet GeoIP map**
 - **OPSEC Score** — aggregated 0–100 exposure risk score across data exposure, identity, infrastructure and web security
-- **HTML & PDF reports** — export full scan results as a styled, self-contained HTML or print-ready PDF (locale-aware EN/RU/DE)
-- **Multi-language UI** — English, Russian, German out of the box (i18n + auto-detect)
-- **Webhook callbacks** — get notified on scan completion with HMAC-signed payloads (SSRF-protected)
+- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE/FR/ES/FR/ES)
+- **Multi-language UI** — English, Russian, German, French, Spanish out of the box (i18n + auto-detect)
+- **Standalone CLI** — run scans headlessly via `python cli.py scan example.com --json`
+- **Scan history & comparison** — browse past scans, load results, compare two scans side-by-side
+- **Webhook callbacks** — get notified on scan completion with HMAC-signed payloads (SSRF-protected), Slack/Discord formatters
 - **Hardened auth** — header-only API keys (`X-API-Key` / `Bearer`), no query-string secrets, strict CORS, per-principal scan isolation
 - **Zero mandatory API keys** — 14 out of 22 modules work without any keys at all
 - **One-command deploy** — `docker compose up --build` and you're running
@@ -84,8 +86,8 @@ flowchart LR
 | OPSEC score (0–100)               | ✅                    | ❌            | ❌           | ❌          | ❌         |
 | Entity graph (interactive)        | ✅                    | ✅            | ❌           | ❌          | ✅         |
 | GeoIP map (multi-marker)          | ✅ Leaflet            | ⚠️ basic      | ❌           | ❌          | ⚠️         |
-| HTML + PDF report export          | ✅ EN/RU/DE           | ⚠️ HTML       | ❌           | ⚠️          | ⚠️         |
-| Multi-language UI                 | ✅ EN/RU/DE           | ❌            | ❌           | ❌          | ❌         |
+| HTML + PDF report export          | ✅ EN/RU/DE/FR/ES           | ⚠️ HTML       | ❌           | ⚠️          | ⚠️         |
+| Multi-language UI                 | ✅ EN/RU/DE/FR/ES           | ❌            | ❌           | ❌          | ❌         |
 | Zero-key out of the box           | ✅ 14/22 modules      | ⚠️            | ⚠️           | ⚠️          | ❌         |
 | Webhook callbacks (signed)        | ✅                    | ❌            | ❌           | ❌          | ❌         |
 | One-command Docker deploy         | ✅                    | ⚠️            | ❌           | ⚠️          | ❌         |
@@ -129,7 +131,7 @@ flowchart LR
 | File Metadata | EXIF, GPS coordinates, PDF/DOCX properties | — |
 | OPSEC Score | Aggregated 0–100 exposure risk score | — |
 | Entity Graph | Interactive node-relationship visualization | — |
-| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE | — |
+| HTML / PDF Report | Self-contained styled report (HTML + xhtml2pdf), localized EN/RU/DE/FR/ES | — |
 | AI Summary | Natural-language findings summary via LLM | OpenRouter / Groq |
 | Webhook Callbacks | HMAC-signed POST on scan completion (SSRF-guarded) | — |
 

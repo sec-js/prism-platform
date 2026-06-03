@@ -98,6 +98,20 @@ export function getWsUrl(scanId: string): string {
   return API_KEY ? `${ws}/ws/${scanId}?api_key=${API_KEY}` : `${ws}/ws/${scanId}`;
 }
 
+export type ScanListItem = {
+  scan_id: string;
+  target: string;
+  scan_type: string;
+  status: string;
+  started_at: string;
+};
+
+export async function listScans(): Promise<ScanListItem[]> {
+  const r = await fetch(`${API}/api/scans`, { headers: authHeaders() });
+  if (!r.ok) return [];
+  return r.json();
+}
+
 export async function fetchReportBlob(scanId: string, format: 'html' | 'pdf', lang?: string): Promise<Blob> {
   const suffix = format === 'pdf' ? '/pdf' : '';
   const q = lang ? `?lang=${encodeURIComponent(lang)}` : '';

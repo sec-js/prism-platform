@@ -3,12 +3,14 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback 
 import en from '@/messages/en.json';
 import ru from '@/messages/ru.json';
 import de from '@/messages/de.json';
+import fr from '@/messages/fr.json';
+import es from '@/messages/es.json';
 
-export type Locale = 'en' | 'ru' | 'de';
+export type Locale = 'en' | 'ru' | 'de' | 'fr' | 'es';
 type Messages = typeof en;
 
-const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages };
-export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de'];
+const MESSAGES: Record<Locale, Messages> = { en, ru: ru as Messages, de: de as Messages, fr: fr as Messages, es: es as Messages };
+export const SUPPORTED_LOCALES: Locale[] = ['en', 'ru', 'de', 'fr', 'es'];
 const STORAGE_KEY = 'prism_locale';
 
 interface I18nContextValue {
@@ -45,6 +47,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const lang = (typeof navigator !== 'undefined' ? navigator.language?.toLowerCase() : '') || '';
       if (lang.startsWith('ru')) setLocaleState('ru');
       else if (lang.startsWith('de')) setLocaleState('de');
+      else if (lang.startsWith('fr')) setLocaleState('fr');
+      else if (lang.startsWith('es')) setLocaleState('es');
     } catch {}
   }, []);
 
