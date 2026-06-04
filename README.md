@@ -461,6 +461,22 @@ Do **not** use PRISM for unauthorized data collection, surveillance, or any acti
 
 ---
 
+## Support the project
+
+If PRISM is useful to you, a ⭐ is the best free way to help. If you'd like to support development financially:
+
+- **[SberTips](https://pay.mysbertips.ru/80561611)** (RUB)
+- **Crypto:**
+
+```
+USDT (TRC20): TEdN41cTdAyNm7vrP4NYceT9sVhTB9BHho
+TON:          UQAkpcYb0hKgqEwGLs08syU_4Nh-_MhwaJT3HPWqFSidLThV
+BTC:          bc1qm8zvvh2ehv3m2su6u0exmcr903cf07gn0r66y6
+ETH:          0x0639476A71255FD2C15dceD53e167952DcddEE8A
+```
+
+---
+
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request!
