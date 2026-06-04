@@ -119,6 +119,36 @@ def _set_cache(module: str, target: str, data: Any) -> None:
     except Exception:
         pass
 
+def _geocode_place(query: str) -> Optional[tuple]:
+    import hashlib
+    cache_path = os.path.join(_CACHE_DIR, "geocode_" + hashlib.md5(query.lower().encode()).hexdigest() + ".json")
+    try:
+        if os.path.exists(cache_path) and time.time() - os.path.getmtime(cache_path) < 30 * 86400:
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+            return (cached["lat"], cached["lng"]) if cached else None
+    except Exception:
+        pass
+    coords = None
+    try:
+        r = _requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={"q": query, "format": "json", "limit": 1},
+            headers={"User-Agent": "PRISM-OSINT/2.3 (https://github.com/NovaCode37/Prism-platform)"},
+            timeout=8,
+        )
+        arr = r.json()
+        if arr:
+            coords = (float(arr[0]["lat"]), float(arr[0]["lon"]))
+    except Exception:
+        return None
+    try:
+        with open(cache_path, "w", encoding="utf-8") as f:
+            json.dump({"lat": coords[0], "lng": coords[1]} if coords else None, f)
+    except Exception:
+        pass
+    return coords
+
 def _scan_path(scan_id: str) -> str:
     return os.path.join(_SCANS_DIR, f"{scan_id}.json")
 
@@ -718,7 +748,24 @@ async def get_map_data(request: Request, scan_id: str):
         country = hlr.get("country_name") or hlr.get("country") or phone.get("country_name")
         carrier = hlr.get("carrier") or phone.get("carrier")
         region = hlr.get("location") or hlr.get("region") or phone.get("region")
-        if country or carrier or region:
+        phone_label = hlr.get("formatted") or hlr.get("phone") or scan["target"]
+
+        coords = None
+        if region or country:
+            coords = _geocode_place(", ".join(p for p in (region, country) if p))
+
+        if coords:
+            markers.append({
+                "lat": coords[0], "lng": coords[1],
+                "ip": phone_label, "label": phone_label,
+                "city": region or None, "country": country or None,
+                "org": carrier, "type": "phone",
+                "approximate": True,
+                "precision": "region" if region else "country",
+            })
+            center = markers[0]
+            zoom = 7 if region else 4
+        elif country or carrier or region:
             info = {
                 "reason": "Phone numbers don't expose precise GPS coordinates.",
                 "country": country or None,

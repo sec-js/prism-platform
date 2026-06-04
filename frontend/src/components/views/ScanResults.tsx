@@ -103,7 +103,14 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
             m.precision ? `Precision: ${escapeHtml(m.precision)}` : '',
           ].filter(Boolean);
           const popup = `<b>${escapeHtml(m.label || m.ip || 'Location')}</b><br/>${parts.join('<br/>')}`;
-          L.marker([m.lat, m.lng]).bindPopup(popup).addTo(markersRef.current);
+          if (m.approximate) {
+            const radius = m.precision === 'country' ? 250000 : 70000;
+            L.circle([m.lat, m.lng], { radius, color: '#4f8ef7', weight: 1, fillColor: '#4f8ef7', fillOpacity: 0.12 })
+              .bindPopup(`${popup}<br/><i>Approximate ${escapeHtml(m.precision || 'area')}-level location</i>`)
+              .addTo(markersRef.current);
+          } else {
+            L.marker([m.lat, m.lng]).bindPopup(popup).addTo(markersRef.current);
+          }
         }
 
         if (bounds.length === 1) {
