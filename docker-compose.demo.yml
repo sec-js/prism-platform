@@ -1,0 +1,17 @@
+services:
+  prism-demo:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ALLOW_ANON_API=true
+    volumes:
+      - ./demo/scan_data:/app/scan_data:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

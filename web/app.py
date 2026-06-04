@@ -73,6 +73,15 @@ async def add_security_headers(request, call_next):
     response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
     return response
 
+@app.on_event("startup")
+async def _startup_banner() -> None:
+    print(
+        "\n  PRISM is running on http://localhost:8080\n"
+        "  ⭐ If you find it useful, star the repo: "
+        "https://github.com/NovaCode37/Prism-platform\n",
+        flush=True,
+    )
+
 _scans: Dict[str, Dict] = {}
 _queues: Dict[str, asyncio.Queue] = {}
 MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS", "200"))

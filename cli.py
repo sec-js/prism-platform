@@ -319,6 +319,11 @@ def main(argv: Optional[List[str]] = None) -> None:
         else:
             output_json(results, path=output_path)
 
+        print(
+            "\n⭐ Found PRISM useful? Star it: "
+            "https://github.com/NovaCode37/Prism-platform",
+            file=sys.stderr,
+        )
         sys.exit(0)
 
 

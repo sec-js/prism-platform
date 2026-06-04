@@ -208,6 +208,20 @@ File Metadata (EXIF/GPS), Email Header Analyzer, Crypto Address Lookup, QR Code 
 
 ## Quick Start
 
+### Try in 60 seconds (no setup, no API keys)
+
+Spin up a self-contained demo preloaded with example scans — no API keys, no external lookups required:
+
+```bash
+git clone https://github.com/NovaCode37/Prism-platform.git
+cd Prism-platform
+docker compose -f docker-compose.demo.yml up --build
+```
+
+Open **http://localhost:8080** — three sample scans (a domain, an IP, and a username) are already under **Recent Scans**, showing the dashboard, OPSEC score, entity graph, map, and HTML/PDF report. Run your own scan from the same screen (free modules like WHOIS/DNS/GeoIP need no key).
+
+> The demo runs anonymously (`ALLOW_ANON_API=true`) and only ships the bundled UI on `:8080`. For the full Next.js frontend, use the Docker / Manual setups below.
+
 ### Docker (recommended)
 
 ```bash
