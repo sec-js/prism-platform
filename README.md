@@ -31,7 +31,7 @@
 - **AI-powered analysis** — automated executive summary, risk assessment, and interactive Q&A chat via LLM (OpenRouter / Nvidia Nemotron)
 - **Real-time dashboard** — WebSocket-driven scan progress with **module-level progress bar (5/8 · 62%)**, interactive entity relationship graph, **multi-marker Leaflet GeoIP map**
 - **OPSEC Score** — aggregated 0–100 exposure risk score across data exposure, identity, infrastructure and web security
-- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE/FR/ES/FR/ES)
+- **HTML, PDF, CSV & Markdown reports** — export full scan results as HTML, PDF, CSV, or Markdown (locale-aware EN/RU/DE/FR/ES)
 - **Multi-language UI** — English, Russian, German, French, Spanish out of the box (i18n + auto-detect)
 - **Standalone CLI** — run scans headlessly via `python cli.py scan example.com --json`
 - **Scan history & comparison** — browse past scans, load results, compare two scans side-by-side
