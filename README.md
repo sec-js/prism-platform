@@ -332,9 +332,9 @@ PRISM is configured via environment variables (`.env`). All API keys are optiona
 | `ALLOWED_ORIGINS`    | Configures CORS settings to restrict which frontend domains can talk to your backend | No | Set to a comma-separated list of domains |
 | `OPENROUTER_API_KEY` | AI summary & chat via OpenRouter (preferred LLM provider) | No | OpenRouter dashboard|
 | `GROQ_API_KEY`       | AI summary & chat via Groq (fallback LLM provider) | No | Groq Console |
-| `MAX_STORED_SCANS`   |max scans kept in memory before old ones are evicted (default 200) | No | Set An Integer Value |
-| `DISABLE_DOCS`       | disables the /docs and /redoc API documentation pages | No | Set to True/False |
-| `WEBHOOK_SECRET`     | adds an X-Prism-Secret header to webhook callbacks for verification | No | Generate a Placeholder string |
+| `MAX_STORED_SCANS`   |Max scans kept in memory before old ones are evicted (default 200) | No | Set An Integer Value |
+| `DISABLE_DOCS`       | Disables the /docs and /redoc API documentation pages | No | Set to True/False |
+| `WEBHOOK_SECRET`     | Adds an X-Prism-Secret header to webhook callbacks for verification | No | Generate a Placeholder string |
 | `MAX_UPLOAD_MB`      |Sets the maximum file size limit for uploads, defaults to 20MB if missing.| No| Set an integer value |
 | `WEBHOOK_FORMAT`     |Configures the format for webhook data payloads. | No | Set to raw, slack, or discord|
 | `CACHE_TTL_HOURS`    |Module cache TTL in hours | No | Set an integer value |
