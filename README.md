@@ -18,7 +18,22 @@
 [![GitHub forks](https://img.shields.io/github/forks/NovaCode37/Prism-platform?style=flat-square&logo=github&cacheSeconds=3600)](https://github.com/NovaCode37/Prism-platform/network/members)
 
 > If you find PRISM useful, please consider giving it a star — it helps others discover the project and motivates further development.
-
+## Table of Contents
+- [Why PRISM?](#why-prism)
+- [Overview](#overview)
+- [Why PRISM vs alternatives?](#why-prism-vs-alternatives)
+- [Use cases](#use-cases)
+- [Features](#features)
+- [Showcase](#showcase)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [API](#api)
+- [Project Structure](#project-structure)
+- [Running Tests](#running-tests)
+- [CICD](#cicd)
+- [Roadmap](#roadmap)
+- [Legal Notice](#legal-notice)
+- [Contributing](#contributing)
 <p align="center">
   <img src="docs/gifs/main.gif" alt="PRISM Boot Animation" width="720" />
 </p>
