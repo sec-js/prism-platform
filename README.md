@@ -10,6 +10,7 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-2.3.0-7c5cfc?style=flat-square)](CHANGELOG.md)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-123%20passing-3fb950?style=flat-square)](#running-tests)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
