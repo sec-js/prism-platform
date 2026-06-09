@@ -1,0 +1,11 @@
+.git
+.github
+**/__pycache__
+*.pyc
+frontend/node_modules
+frontend/.next
+results
+module_cache
+scan_data
+*.md
+.env
