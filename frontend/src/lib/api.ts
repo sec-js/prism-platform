@@ -31,8 +31,8 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   }
 }
 
-export async function startScan(target: string, scan_type: ScanType, modules: string[]): Promise<{ scan_id: string }> {
-  return post('/api/scan', { target, scan_type, modules });
+export async function startScan(target: string, scan_type: ScanType, modules: string[], force_refresh = false): Promise<{ scan_id: string }> {
+  return post('/api/scan', { target, scan_type, modules, force_refresh });
 }
 
 export async function getScan(id: string): Promise<ScanMeta & { results: ScanResults }> {

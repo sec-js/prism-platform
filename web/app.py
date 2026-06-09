@@ -215,6 +215,7 @@ class ScanRequest(BaseModel):
     scan_type: str = "auto"
     modules: List[str] = []
     webhook_url: Optional[str] = None
+    force_refresh: bool = False
 
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "").strip()
 
@@ -355,7 +356,8 @@ def _done_message(name: str, result: Any, cached: bool = False) -> Dict[str, Any
 async def _run_module(scan_id: str, name: str, coro_or_func, *args, **kwargs) -> Any:
     await _push(scan_id, {"type": "module_start", "module": name})
     cache_target = args[0] if args else None
-    if name in _CACHED_MODULES and cache_target:
+    force_refresh = bool(_scans.get(scan_id, {}).get("force_refresh"))
+    if not force_refresh and name in _CACHED_MODULES and cache_target:
         cached = _get_cached(name, str(cache_target))
         # Ignore legacy non-OK cache entries so the module can re-run.
         if cached is not None and classify(cached) == OK:
@@ -615,6 +617,7 @@ async def start_scan(request: Request, req: ScanRequest):
         "owner": get_principal(request),
         "results": None,
         "progress": [],
+        "force_refresh": req.force_refresh,
     }
     _save_scan(scan_id, _scans[scan_id])
     _queues[scan_id] = asyncio.Queue()

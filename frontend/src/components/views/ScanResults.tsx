@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search } from 'lucide-react';
-import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields } from '@/lib/types';
-import { fetchReportBlob, generateAiSummary, sendAiChat, getMapData, getGraphData } from '@/lib/api';
+import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2 } from 'lucide-react';
+import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
+import { fetchReportBlob, generateAiSummary, sendAiChat, getMapData, getGraphData, startScan, getScan } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
 
 type MapMarker = {
@@ -260,13 +260,27 @@ function DtRow({ label, value }: { label: string; value?: string | number | null
   );
 }
 
-function Card({ title, extra, children }: { title?: string; extra?: React.ReactNode; children: React.ReactNode }) {
+function Card({ title, extra, children, onRefresh, refreshing = false }: { title?: string; extra?: React.ReactNode; children: React.ReactNode; onRefresh?: () => void; refreshing?: boolean }) {
   return (
     <div className="card mb-3">
       {title && (
         <div className="card-head flex items-center justify-between gap-2">
           <span>{title}</span>
-          {extra}
+          <div className="flex items-center gap-2">
+            {extra}
+            {onRefresh && (
+              <button
+                type="button"
+                onClick={onRefresh}
+                disabled={refreshing}
+                className="text-text-3 hover:text-text-1 transition-colors p-1 rounded-sm hover:bg-surface-2 disabled:cursor-wait disabled:opacity-70"
+                title={refreshing ? 'Refreshing…' : 'Refresh module'}
+                aria-label={refreshing ? 'Refreshing module' : 'Refresh module'}
+              >
+                {refreshing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+              </button>
+            )}
+          </div>
         </div>
       )}
       <div className="p-4">{children}</div>
@@ -312,17 +326,19 @@ function ModuleNotice({ status, reason }: { status: 'skipped' | 'rate_limited'; 
   );
 }
 
-function KeyModuleCard({ title, mod, children }: {
+function KeyModuleCard({ title, mod, children, onRefresh, refreshing = false }: {
   title: string;
   mod?: (ModuleStatusFields & { error?: string | null }) | null;
   children: React.ReactNode;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   if (!mod) return null;
   const st = modStatus(mod);
-  if (st === 'ok') return <Card title={title}>{children}</Card>;
+  if (st === 'ok') return <Card title={title} onRefresh={onRefresh} refreshing={refreshing}>{children}</Card>;
   if (st === 'skipped' || st === 'rate_limited') {
     return (
-      <Card title={title} extra={<ModuleStatusBadge status={st} />}>
+      <Card title={title} extra={<ModuleStatusBadge status={st} />} onRefresh={onRefresh} refreshing={refreshing}>
         <ModuleNotice status={st} reason={mod.status_reason} />
       </Card>
     );
@@ -412,15 +428,51 @@ export function ScanResults({ scan }: Props) {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [copyToast, setCopyToast] = useState('');
   const [reportLoading, setReportLoading] = useState<'html' | 'pdf' | null>(null);
+  const [localResults, setLocalResults] = useState<ScanResults>(scan.results);
+  const [refreshingModules, setRefreshingModules] = useState<Record<string, boolean>>({});
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const r = scan.results;
+  const r = localResults;
   const opsec = r.opsec;
 
   const showToast = (message: string) => {
     setCopyToast(message);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setCopyToast(''), 1200);
+  };
+
+  useEffect(() => {
+    setLocalResults(scan.results);
+    setRefreshingModules({});
+  }, [scan.id, scan.results]);
+
+  const isRefreshing = (module: string) => Boolean(refreshingModules[module]);
+
+  const refreshModule = async (module: string, keys: string[] = [module]) => {
+    if (isRefreshing(module)) return;
+    setRefreshingModules(prev => ({ ...prev, [module]: true }));
+    try {
+      const { scan_id } = await startScan(scan.target, scan.scan_type as ScanType, [module], true);
+      let done: { status: string; results: ScanResults; error?: string } | null = null;
+      for (let i = 0; i < 90; i += 1) {
+        await new Promise(res => setTimeout(res, 1500));
+        const d = await getScan(scan_id) as unknown as { status: string; results: ScanResults; error?: string };
+        if (d.status === 'completed') { done = d; break; }
+        if (d.status === 'failed' || d.status === 'error') throw new Error(d.error || 'Module refresh failed');
+      }
+      if (!done) throw new Error('Module refresh timed out');
+      const src = done.results as unknown as Record<string, unknown>;
+      setLocalResults(prev => {
+        const next = { ...prev } as Record<string, unknown>;
+        for (const k of keys) if (k in src) next[k] = src[k];
+        return next as ScanResults;
+      });
+      showToast('Module refreshed');
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Module refresh failed');
+    } finally {
+      setRefreshingModules(prev => ({ ...prev, [module]: false }));
+    }
   };
 
   const copyValue = async (value: string | number | null | undefined) => {
@@ -790,7 +842,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'whois' && r.whois && (
-          <Card title="WHOIS Registration">
+          <Card title="WHOIS Registration" onRefresh={() => refreshModule('whois')} refreshing={isRefreshing('whois')}>
             <div className="space-y-1.5">
               <DtRow label="Registrar" value={r.whois.registrar} />
               <DtRow label="Organization" value={r.whois.org} />
@@ -826,7 +878,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'dns' && r.dns?.records && (
-          <Card title="DNS Records">
+          <Card title="DNS Records" onRefresh={() => refreshModule('dns')} refreshing={isRefreshing('dns')}>
             {Object.entries(r.dns.records).filter(([, v]) => Array.isArray(v) && v.length > 0).map(([type, records]) => (
               <div key={type} className="mb-4">
                 <div className="text-[11px] font-bold text-blue mb-1.5 uppercase tracking-wider">{type}</div>
@@ -845,7 +897,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'subdomains' && r.cert_transparency && (
-          <Card title={`Certificate Transparency — ${r.cert_transparency.subdomains?.length} subdomains`}>
+          <Card title={`Certificate Transparency — ${r.cert_transparency.subdomains?.length} subdomains`} onRefresh={() => refreshModule('cert_transparency')} refreshing={isRefreshing('cert_transparency')}>
             <div className="text-[11px] text-text-3 mb-3">{r.cert_transparency.total_certs} certificate(s) analysed</div>
             <div className="flex flex-wrap gap-1">
               {r.cert_transparency.subdomains?.map(s => (
@@ -859,7 +911,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'accounts' && (
-          <Card title="Username Search">
+          <Card title="Username Search" onRefresh={() => refreshModule('blackbird')} refreshing={isRefreshing('blackbird')}>
             <div className="mb-3">
               <div className="relative">
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-3" />
@@ -896,7 +948,7 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'threats' && (
           <div>
-            <KeyModuleCard title="VirusTotal" mod={r.virustotal}>
+            <KeyModuleCard title="VirusTotal" mod={r.virustotal} onRefresh={() => refreshModule('virustotal')} refreshing={isRefreshing('virustotal')}>
               <div className="grid grid-cols-2 sm:flex sm:gap-6 mb-4 gap-3">
                 {[['Malicious', r.virustotal?.malicious, '#f85149'], ['Suspicious', r.virustotal?.suspicious, '#d29922'], ['Harmless', r.virustotal?.harmless, '#3fb950'], ['Undetected', r.virustotal?.undetected, '#484f58']].map(([l, v, c]) => (
                   <div key={String(l)} className="text-center">
@@ -910,7 +962,7 @@ export function ScanResults({ scan }: Props) {
                 <DtRow label="ASN" value={r.virustotal?.as_owner} />
               </div>
             </KeyModuleCard>
-            <KeyModuleCard title="AbuseIPDB" mod={r.abuseipdb}>
+            <KeyModuleCard title="AbuseIPDB" mod={r.abuseipdb} onRefresh={() => refreshModule('abuseipdb')} refreshing={isRefreshing('abuseipdb')}>
               <div className="space-y-1.5">
                 <div className="dt-row"><span className="dt-label">Abuse Score</span>
                   <span className="font-black" style={{ color: (r.abuseipdb?.abuse_score ?? 0) >= 50 ? '#f85149' : (r.abuseipdb?.abuse_score ?? 0) >= 10 ? '#d29922' : '#3fb950' }}>
@@ -923,7 +975,7 @@ export function ScanResults({ scan }: Props) {
                 {r.abuseipdb?.is_tor && <div className="text-red text-[12px] font-semibold mt-1">⚠ TOR Exit Node</div>}
               </div>
             </KeyModuleCard>
-            <KeyModuleCard title="Shodan" mod={r.shodan}>
+            <KeyModuleCard title="Shodan" mod={r.shodan} onRefresh={() => refreshModule('shodan')} refreshing={isRefreshing('shodan')}>
               {r.shodan?.open_ports?.length ? (
                 <div className="mb-3">
                   <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Open Ports</div>
@@ -946,7 +998,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'censys' && (
-          <KeyModuleCard title={`Censys — ${r.censys?.domain ? 'Certificate Search' : 'Host Info'}`} mod={r.censys}>
+          <KeyModuleCard title={`Censys — ${r.censys?.domain ? 'Certificate Search' : 'Host Info'}`} mod={r.censys} onRefresh={() => refreshModule('censys')} refreshing={isRefreshing('censys')}>
             <div className="space-y-1.5">
               {r.censys?.ip && <div className="dt-row"><span className="dt-label">IP</span><span className="dt-value">{r.censys.ip}</span></div>}
               {r.censys?.asn && <div className="dt-row"><span className="dt-label">ASN</span><span className="dt-value">AS{r.censys.asn} {r.censys.as_name ?? ''}</span></div>}
@@ -997,7 +1049,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'darkweb' && r.onion && (
-          <Card title={`Dark Web Mirrors — ${r.onion.total_found} found`}>
+          <Card title={`Dark Web Mirrors — ${r.onion.total_found} found`} onRefresh={() => refreshModule('onion')} refreshing={isRefreshing('onion')}>
             <div className="text-[11px] text-text-3 mb-3">
               Sources: Ahmia ({r.onion.sources?.ahmia ?? 0}) · DarkSearch ({r.onion.sources?.darksearch ?? 0})
             </div>
@@ -1018,7 +1070,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'wayback' && r.wayback && (
-          <Card title="Wayback Machine">
+          <Card title="Wayback Machine" onRefresh={() => refreshModule('wayback')} refreshing={isRefreshing('wayback')}>
             {r.wayback.total_snapshots && (
               <div className="text-[12px] text-text-2 mb-4">
                 {r.wayback.total_snapshots} snapshots · First: {r.wayback.first_snapshot} · Last: {r.wayback.last_snapshot}
@@ -1057,7 +1109,7 @@ export function ScanResults({ scan }: Props) {
         {tab === 'email' && (
           <div>
             {r.emailrep && !r.emailrep.error && (
-              <Card title="Email Reputation">
+              <Card title="Email Reputation" onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
                 <div className="space-y-1.5">
                   <div className="dt-row"><span className="dt-label">Reputation</span>
                     <span className={`font-bold ${r.emailrep.reputation === 'high' ? 'text-green' : r.emailrep.reputation === 'medium' ? 'text-yellow' : 'text-red'}`}>
@@ -1094,12 +1146,12 @@ export function ScanResults({ scan }: Props) {
               </Card>
             )}
             {r.emailrep?.error && (
-              <Card title="Email Reputation">
+              <Card title="Email Reputation" onRefresh={() => refreshModule('emailrep')} refreshing={isRefreshing('emailrep')}>
                 <div className="text-red text-sm">{r.emailrep.error}</div>
               </Card>
             )}
             {r.smtp && !r.smtp.error && (
-              <Card title="SMTP Verification">
+              <Card title="SMTP Verification" onRefresh={() => refreshModule('smtp')} refreshing={isRefreshing('smtp')}>
                 <div className="space-y-1.5">
                   <div className="dt-row"><span className="dt-label">Exists</span>
                     <span className={r.smtp.exists === true ? 'text-green' : r.smtp.exists === false ? 'text-red' : 'text-text-3'}>
@@ -1121,7 +1173,7 @@ export function ScanResults({ scan }: Props) {
                 </div>
               </Card>
             )}
-            <KeyModuleCard title="Breach Check" mod={r.breaches}>
+            <KeyModuleCard title="Breach Check" mod={r.breaches} onRefresh={() => refreshModule('leaks', ['breaches'])} refreshing={isRefreshing('leaks')}>
               <div className="space-y-1.5">
                 {r.breaches?.found !== undefined && (
                   <div className="dt-row"><span className="dt-label">Breaches Found</span>
@@ -1159,7 +1211,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'phone' && r.phone && (
-          <Card title="Phone Intelligence">
+          <Card title="Phone Intelligence" onRefresh={() => refreshModule('hlr', ['hlr', 'phone_owner', 'phone'])} refreshing={isRefreshing('hlr')}>
             <div className="space-y-1.5">
               <div className="dt-row"><span className="dt-label">Valid</span>
                 <span className={r.phone.valid ? 'text-green' : 'text-red'}>{r.phone.valid ? 'Yes' : 'No'}</span>
@@ -1185,7 +1237,7 @@ export function ScanResults({ scan }: Props) {
         )}
 
         {tab === 'telegram' && r.telegram && (
-          <Card title="Telegram Profile">
+          <Card title="Telegram Profile" onRefresh={() => refreshModule('telegram')} refreshing={isRefreshing('telegram')}>
             {r.telegram.error ? (
               <div className="text-red text-sm">{r.telegram.error}</div>
             ) : (
