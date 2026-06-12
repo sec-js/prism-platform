@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Terminal, Sun, Moon, Menu, Languages, Book } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslations, SUPPORTED_LOCALES } from '@/lib/i18n';
 import { Logo } from './Logo';
@@ -116,6 +116,19 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
         >
           <Book size={15} />
         </a>
+
+            <a
+  href="https://github.com/NovaCode37/Prism-platform"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-1 text-text-3 hover:text-text-1 transition-colors text-[11px]"
+  title="Star on GitHub"
+  aria-label="Star on GitHub"
+>
+  <Star size={15} />
+  <span className="hidden sm:inline">Star</span>
+</a>
+
         <a
           href="https://github.com/NovaCode37/Prism-platform"
           target="_blank"
