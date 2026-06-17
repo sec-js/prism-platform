@@ -43,7 +43,7 @@ from web.security import (
 _disable_docs = os.getenv("DISABLE_DOCS", "").lower() in ("1", "true", "yes")
 app = FastAPI(
     title="OSINT Toolkit",
-    version="2.3.0",
+    version="2.4.0",
     docs_url=None if _disable_docs else "/docs",
     redoc_url=None if _disable_docs else "/redoc",
     openapi_url=None if _disable_docs else "/openapi.json",
@@ -84,14 +84,14 @@ async def _startup_banner() -> None:
 
 _scans: Dict[str, Dict] = {}
 _queues: Dict[str, asyncio.Queue] = {}
-MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS", "200"))
+MAX_STORED_SCANS = int(os.getenv("MAX_STORED_SCANS") or "200")
 
 _SCANS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scan_data")
 os.makedirs(_SCANS_DIR, exist_ok=True)
 
 _CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "module_cache")
 os.makedirs(_CACHE_DIR, exist_ok=True)
-_CACHE_TTL = int(os.getenv("CACHE_TTL_HOURS", "24")) * 3600
+_CACHE_TTL = int(os.getenv("CACHE_TTL_HOURS") or "24") * 3600
 
 def _cache_key(module: str, target: str) -> str:
     import hashlib

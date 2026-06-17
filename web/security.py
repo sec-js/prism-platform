@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "20")) * 1024 * 1024
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB") or "20") * 1024 * 1024
 MAX_TARGET_LEN   = 512
 
 def _parse_keys() -> List[str]:

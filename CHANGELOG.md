@@ -8,14 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [2.4.0] — 2026-06-13
+
 ### Added
-- **Standard module status enum** (`ok` / `skipped` / `rate_limited` / `error`) in `modules/module_status.py`, with `classify()`, `reason_for()`, and `annotate()` helpers (#61).
-- **Graceful degradation for key-dependent modules** — Shodan, VirusTotal, AbuseIPDB, Censys, Leak-Lookup/HIBP, and Telegram now report `skipped` when an API key is absent and `rate_limited` on HTTP 429, instead of failing with a hard error (#61).
-- **Per-module status badges in the dashboard** — live progress chips and result cards now render the module status (skipped/rate-limited shown with their reason), and the scan engine propagates the status over WebSocket (#61).
-- **`HIBP_API_KEY` config option** — the HIBP breach lookup now reads a real key from the environment and skips up-front when it is absent, instead of always hitting an unauthenticated 401 (#61).
+- **Graceful degradation for key-dependent modules** — a standard status enum (`ok` / `skipped` / `rate_limited` / `error`) in `modules/module_status.py`; Shodan, VirusTotal, AbuseIPDB, Censys, Leak-Lookup/HIBP and Telegram now report `skipped` when an API key is absent and `rate_limited` on HTTP 429 instead of failing, with per-module status badges in the dashboard (#61).
+- **`HIBP_API_KEY` config option** — the HIBP breach lookup reads a real key and skips up-front when it is absent, instead of always hitting an unauthenticated 401 (#61).
+- **One-command demo** — `docker compose -f docker-compose.demo.yml up` boots PRISM with preloaded sample scans, no API keys required (#63).
+- **IP / Subnet calculator** standalone tool (#45).
+- **Hash Identifier** standalone tool — detects MD5 / SHA-1 / SHA-256 / SHA-512 from length and charset (#76).
+- **Per-module refresh** — a refresh button on each result card re-runs just that module and updates its result (#104).
+- **Approximate region-level GeoIP map for phone scans** — geocodes the operator region and highlights the area (clearly labelled "approximate") instead of leaving the map blank.
+- **Bundled Unicode fonts (DejaVu Sans/Mono)** for PDF reports.
+- **Project polish** — README API reference + environment-variables table, FAQ, Table of Contents, `LICENSE` (MIT), `CITATION.cff`, `SUPPORT.md`, `CODEOWNERS`, `.editorconfig`, `.gitattributes`, `.dockerignore`, Sponsor/funding config, and Bug/Feature issue forms.
 
 ### Changed
-- The scan engine (`web/app.py`) derives each module's status from its result, persists it for the results view, and only caches genuinely successful (`ok`) results so a missing key is not frozen in cache once configured (#61).
+- **Scan history** is now sorted by date (newest first), auto-refreshes after a scan completes, and its labels are localized in all five languages.
+- The scan engine caches only genuinely successful (`ok`) results, so a missing key is not frozen in cache once configured (#61).
+- The Censys tab is hidden when the module is skipped (no API key) instead of showing an empty card.
+- Removed the default Leaflet attribution flag from all maps.
+
+### Fixed
+- **PDF reports rendered non-Latin text (e.g. Cyrillic) as empty grey boxes** — bundled DejaVu fonts now render Unicode correctly.
+- **GeoIP map sometimes rendered blank** — the map recalculates its size after the layout settles.
+- **New scans could be missing from history** — the list was capped before sorting; it now sorts by date, then caps.
+- **Sidebar "Modules" label showed the raw i18n key** (duplicate `sidebar.modules`) — fixed and localized.
+- **Empty numeric env vars crashed startup** — `CACHE_TTL_HOURS`, `MAX_STORED_SCANS` and `MAX_UPLOAD_MB` fall back to their defaults when set to an empty value (#122).
 
 ---
 
