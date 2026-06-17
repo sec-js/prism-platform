@@ -357,6 +357,70 @@ function HashPanel() {
   );
 }
 
+function EncoderPanel() {
+  const { t } = useTranslations();
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState('');
+  const [mode, setMode] = useState<'base64' | 'url'>('base64');
+
+  const run = (op: 'encode' | 'decode') => {
+    setError('');
+    setOutput('');
+    if (!input) return;
+    try {
+      if (mode === 'base64') {
+        setOutput(op === 'encode'
+          ? btoa(unescape(encodeURIComponent(input)))
+          : decodeURIComponent(escape(atob(input))));
+      } else {
+        setOutput(op === 'encode' ? encodeURIComponent(input) : decodeURIComponent(input));
+      }
+    } catch {
+      setError(t('toolPanels.encoder.invalid'));
+    }
+  };
+
+  return (
+    <div>
+      <Card title={t('toolPanels.encoder.title')}>
+        <div className="flex gap-2 mb-3">
+          {(['base64', 'url'] as const).map(m => (
+            <button key={m} type="button" onClick={() => { setMode(m); setOutput(''); setError(''); }}
+              className={`px-3 py-1 text-[11px] rounded border transition-colors ${mode === m ? 'border-blue/50 text-blue bg-blue/10' : 'border-border-2 text-text-3 hover:text-text-2'}`}>
+              {m === 'base64' ? 'Base64' : 'URL'}
+            </button>
+          ))}
+        </div>
+        <textarea
+          value={input}
+          onChange={e => { setInput(e.target.value); setError(''); }}
+          placeholder={t('toolPanels.encoder.placeholder')}
+          className="input-field font-mono text-[11px] resize-y leading-relaxed w-full"
+          rows={5}
+        />
+        <div className="flex gap-2 mt-2">
+          <button type="button" onClick={() => run('encode')}
+            className="flex-1 text-[11px] py-1.5 rounded border border-blue/40 text-blue bg-blue/10 hover:bg-blue/20 transition-colors">
+            {t('toolPanels.encoder.encode')}
+          </button>
+          <button type="button" onClick={() => run('decode')}
+            className="flex-1 text-[11px] py-1.5 rounded border border-border-2 text-text-3 hover:text-text-2 transition-colors">
+            {t('toolPanels.encoder.decode')}
+          </button>
+        </div>
+        {error && <span className="text-[11px] text-red mt-2 block">{error}</span>}
+      </Card>
+      {output && (
+        <Card title={t('toolPanels.encoder.output')}>
+          <textarea readOnly value={output} rows={5}
+            className="input-field font-mono text-[11px] resize-y leading-relaxed w-full" />
+        </Card>
+      )}
+    </div>
+  );
+}
+
 function HeadersPanel() {
   const { t } = useTranslations();
   const [text, setText] = useState('');
@@ -578,7 +642,7 @@ function SubnetPanel() {
 const TOOL_TITLES: Record<string, string> = {
   crypto: 'Crypto Address Lookup', qr: 'QR Code Decoder',
   metadata: 'File Metadata & GEOINT', headers: 'Email Header Analyzer', mac: 'MAC Lookup',
-  subnet: 'IP / Subnet Calculator', hash: 'Hash Identifier',
+  subnet: 'IP / Subnet Calculator', hash: 'Hash Identifier', encoder: 'Base64 & URL Encoder',
 };
 
 interface Props {
@@ -608,6 +672,7 @@ export function ToolPanels({ mode, onBack }: Props) {
       {activePanel === 'subnet' && <SubnetPanel />}
       {activePanel === 'mac' && <MacPanel />}
       {activePanel === 'hash' && <HashPanel />}
+      {activePanel === 'encoder' && <EncoderPanel />}
     </div>
   );
 }

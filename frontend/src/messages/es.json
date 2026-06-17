@@ -34,7 +34,8 @@
       "leaks": "Filtraciones",
       "hlr": "Teléfono",
       "blackbird": "Blackbird",
-      "maigret": "Maigret"
+      "maigret": "Maigret",
+      "github": "GitHub"
     },
     "runScan": "Iniciar escaneo",
     "scanning": "Escaneando…",
@@ -54,7 +55,9 @@
       "La pestaña Grafo muestra las relaciones entre entidades",
       "La pestaña Mapa muestra la geolocalización IP",
       "Use el módulo Dorks para encontrar archivos expuestos",
-      "La puntuación OPSEC evalúa el riesgo de exposición del objetivo"
+      "La puntuación OPSEC evalúa el riesgo de exposición del objetivo",
+      "Exporta escaneos como CSV o Markdown",
+      "Compara dos escaneos desde el Historial"
     ]
   },
   "idle": {
@@ -75,7 +78,8 @@
       "qr":       { "label": "Decodificar QR", "desc": "Decodificar y analizar" },
       "mac":      { "label": "Búsqueda MAC", "desc": "Búsqueda de proveedor" },
       "subnet":   { "label": "IP / Subred",     "desc": "Rangos de red & CIDR" },
-      "hash":     { "label": "Identificador de hash", "desc": "Identificar tipos de hash" }
+      "hash":     { "label": "Identificador de hash", "desc": "Identificar tipos de hash" },
+      "encoder":  { "label": "Base64 / URL", "desc": "Codificar y decodificar" }
     },
     "demo": {
       "line1": "Esta es una demo pública con cuotas de API limitadas. Algunos módulos (Shodan, VirusTotal) pueden tener límite de velocidad.",
@@ -208,6 +212,14 @@
       "length": "Longitud",
       "invalidHex": "Caracteres hexadecimales inválidos. Los hashes contienen solo 0-9 y a-f.",
       "unsupportedLength": "Longitud de hash no soportada. Esperado: 32 (MD5), 40 (SHA-1), 64 (SHA-256) o 128 (SHA-512) caracteres."
+    },
+    "encoder": {
+      "title": "Codificador Base64 y URL",
+      "placeholder": "Introduzca texto para codificar o decodificar…",
+      "encode": "Codificar",
+      "decode": "Decodificar",
+      "output": "Salida",
+      "invalid": "Entrada no válida para el modo seleccionado."
     }
   },
   "common": { "copy": "Copiar", "copied": "¡Copiado!", "copyFailed": "Error al copiar", "loading": "Cargando…", "error": "Error", "backToTop": "Volver arriba" },

@@ -1,6 +1,6 @@
 export type ScanType = 'domain' | 'ip' | 'email' | 'phone' | 'username';
 export type ScanStatus = 'idle' | 'running' | 'completed' | 'failed';
-export type ToolMode = 'metadata' | 'headers' | 'crypto' | 'qr' | 'mac' | 'subnet' | 'hash' | null;
+export type ToolMode = 'metadata' | 'headers' | 'crypto' | 'qr' | 'mac' | 'subnet' | 'hash' | 'encoder' | null;
 
 /** Standard per-module result status (mirrors modules/module_status.py). */
 export type ModuleStatus = 'ok' | 'skipped' | 'rate_limited' | 'error';
@@ -196,9 +196,35 @@ export interface ScanResults {
   dorks?: string[];
   censys?: CensysData;
   onion?: OnionData;
+  github?: GitHubData;
   report_path?: string;
   map_data?: unknown;
   graph?: unknown;
+}
+
+export interface GitHubData extends ModuleStatusFields {
+  username?: string;
+  profile?: {
+    name?: string | null;
+    bio?: string | null;
+    company?: string | null;
+    location?: string | null;
+    blog?: string | null;
+    twitter?: string | null;
+    email?: string | null;
+    type?: string | null;
+    followers?: number;
+    following?: number;
+    public_repos?: number;
+    created_at?: string | null;
+    avatar_url?: string | null;
+    html_url?: string | null;
+  } | null;
+  repo_count?: number;
+  total_stars?: number;
+  top_languages?: { language: string; count: number }[];
+  emails?: string[];
+  error?: string | null;
 }
 
 export interface CensysData extends ModuleStatusFields {

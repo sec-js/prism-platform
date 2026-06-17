@@ -45,7 +45,8 @@
       "leaks": "Breach Check",
       "hlr": "Phone Lookup",
       "blackbird": "Blackbird",
-      "maigret": "Maigret"
+      "maigret": "Maigret",
+      "github": "GitHub"
     },
     "tips": [
       "Scan domains, IPs, emails, phones & usernames",
@@ -54,7 +55,9 @@
       "Graph tab shows entity relationships",
       "Map tab shows GeoIP location data",
       "Use Dorks module to find exposed files",
-      "OPSEC score rates target exposure risk"
+      "OPSEC score rates target exposure risk",
+      "Export scans as CSV or Markdown",
+      "Compare two scans from History"
     ]
   },
   "idle": {
@@ -81,7 +84,8 @@
       "qr":       { "label": "QR Decode",       "desc": "Decode & analyze" },
       "mac":      { "label": "MAC Lookup",      "desc": "Vendor lookup" },
       "subnet":   { "label": "IP / Subnet",     "desc": "Network ranges & CIDR" },
-      "hash":     { "label": "Hash Identifier", "desc": "Identify hash types" }
+      "hash":     { "label": "Hash Identifier", "desc": "Identify hash types" },
+      "encoder":  { "label": "Base64 / URL", "desc": "Encode & decode" }
     },
     "demo": {
       "line1": "This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.",
@@ -175,6 +179,14 @@
       "length": "Length",
       "invalidHex": "Invalid hex characters. Hashes contain only 0-9 and a-f.",
       "unsupportedLength": "Unsupported hash length. Expected: 32 (MD5), 40 (SHA-1), 64 (SHA-256), or 128 (SHA-512) chars."
+    },
+    "encoder": {
+      "title": "Base64 & URL Encoder",
+      "placeholder": "Enter text to encode or decode…",
+      "encode": "Encode",
+      "decode": "Decode",
+      "output": "Output",
+      "invalid": "Invalid input for the selected mode."
     }
   },
   "progress": {

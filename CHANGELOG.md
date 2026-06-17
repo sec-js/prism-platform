@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **GitHub user/organization recon module** — given a username it returns the public profile, top languages, repo/star counts, and emails leaked in commit metadata; works without a token and degrades to `rate_limited` when the API throttles (#95).
+- **Base64 & URL encoder/decoder** standalone tool.
+- More rotating sidebar tips, localized across all five languages (#74).
+
+### Changed
+- The Graph tab shows a clear, localized empty state instead of a blank area (#77).
+- The Dockerfile retries `apt-get` downloads (`Acquire::Retries`), making builds more robust on flaky networks (#121).
+
 ---
 
 ## [2.4.0] — 2026-06-13

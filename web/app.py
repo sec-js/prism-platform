@@ -541,6 +541,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                     scan_id, "maigret", MaigretWrapper().search, target
                 )
 
+            if want("github"):
+                from modules.github_recon import GitHubRecon
+                results["github"] = await _run_module(
+                    scan_id, "github", GitHubRecon().lookup, target
+                )
+
         await _push(scan_id, {"type": "module_start", "module": "opsec_score"})
         opsec = score_from_results(results)
         results["opsec_score"] = opsec

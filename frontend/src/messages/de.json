@@ -45,7 +45,8 @@
       "leaks": "Leak-Check",
       "hlr": "Telefon-Suche",
       "blackbird": "Blackbird",
-      "maigret": "Maigret"
+      "maigret": "Maigret",
+      "github": "GitHub"
     },
     "tips": [
       "Scanne Domains, IPs, E-Mails, Telefone & Benutzernamen",
@@ -54,7 +55,9 @@
       "Graph-Tab zeigt Entitätsbeziehungen",
       "Map-Tab zeigt GeoIP-Standortdaten",
       "Dorks-Modul nutzen um exponierte Dateien zu finden",
-      "OPSEC-Bewertung misst Ziel-Expositionrisiko"
+      "OPSEC-Bewertung misst Ziel-Expositionrisiko",
+      "Scans als CSV oder Markdown exportieren",
+      "Zwei Scans aus dem Verlauf vergleichen"
     ]
   },
   "idle": {
@@ -81,7 +84,8 @@
       "qr":       { "label": "QR-Decoder",        "desc": "Decodieren & analysieren" },
       "mac":      { "label": "MAC Lookup",        "desc": "Hersteller-Suche" },
       "subnet":   { "label": "IP / Subnetz",    "desc": "Netzwerkbereiche & CIDR" },
-      "hash":     { "label": "Hash-Identifier",   "desc": "Hash-Typen identifizieren" }
+      "hash":     { "label": "Hash-Identifier",   "desc": "Hash-Typen identifizieren" },
+      "encoder":  { "label": "Base64 / URL", "desc": "Kodieren & Dekodieren" }
     },
     "demo": {
       "line1": "Dies ist eine öffentliche Demo mit begrenzten API-Kontingenten. Manche Module (Shodan, VirusTotal) können ratenbegrenzt sein.",
@@ -175,6 +179,14 @@
       "length": "Länge",
       "invalidHex": "Ungültige Hexadezimalzeichen. Hashes enthalten nur 0-9 und a-f.",
       "unsupportedLength": "Nicht unterstützte Hash-Länge. Erwartet: 32 (MD5), 40 (SHA-1), 64 (SHA-256) oder 128 (SHA-512) Zeichen."
+    },
+    "encoder": {
+      "title": "Base64- & URL-Encoder",
+      "placeholder": "Text zum Kodieren oder Dekodieren eingeben…",
+      "encode": "Kodieren",
+      "decode": "Dekodieren",
+      "output": "Ausgabe",
+      "invalid": "Ungültige Eingabe für den gewählten Modus."
     }
   },
   "progress": {

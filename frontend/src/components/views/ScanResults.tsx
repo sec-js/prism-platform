@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2 } from 'lucide-react';
+import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
 import { fetchReportBlob, generateAiSummary, sendAiChat, getMapData, getGraphData, startScan, getScan } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
@@ -195,6 +195,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
 }
 
 function GraphView({ scanId }: { scanId: string }) {
+  const { t } = useTranslations();
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const [error, setError] = useState('');
@@ -239,7 +240,12 @@ function GraphView({ scanId }: { scanId: string }) {
   return (
     <div>
       {status === 'loading' && <div className="text-text-3 text-sm animate-pulse py-4">Loading graph…</div>}
-      {status === 'empty' && <div className="text-text-3 text-sm py-4">No graph data available for this scan</div>}
+      {status === 'empty' && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <GitBranch size={28} className="text-text-3 opacity-40 mb-2" />
+          <div className="text-text-3 text-sm">{t('results.graph.empty')}</div>
+        </div>
+      )}
       {status === 'error' && <div className="text-red text-sm py-4">{error}</div>}
       <div ref={containerRef} className="h-72 sm:h-[480px]" style={{ height: status === 'ready' ? undefined : 0, background: 'transparent' }} />
     </div>
@@ -398,6 +404,7 @@ const TABS = [
   { id: 'dns', label: 'DNS', icon: Server },
   { id: 'subdomains', label: 'Subdomains', icon: Lock },
   { id: 'accounts', label: 'Accounts', icon: User },
+  { id: 'github', label: 'GitHub', icon: Github },
   { id: 'threats', label: 'Threats', icon: AlertTriangle },
   { id: 'censys', label: 'Censys', icon: Eye },
   { id: 'darkweb', label: 'Dark Web', icon: ShieldAlert },
@@ -708,6 +715,7 @@ export function ScanResults({ scan }: Props) {
     if (t.id === 'dns') return r.dns?.records && Object.keys(r.dns.records).length > 0;
     if (t.id === 'subdomains') return r.cert_transparency?.subdomains?.length;
     if (t.id === 'accounts') return r.blackbird?.some(b => b.status === 'found');
+    if (t.id === 'github') return r.github && modStatus(r.github) === 'ok';
     if (t.id === 'threats') return [r.virustotal, r.abuseipdb, r.shodan].some(m => m && modStatus(m) !== 'error');
     if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
     if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
@@ -944,6 +952,52 @@ export function ScanResults({ scan }: Props) {
             </table>
             </div>
           </Card>
+        )}
+
+        {tab === 'github' && (
+          <KeyModuleCard title="GitHub Recon" mod={r.github} onRefresh={() => refreshModule('github')} refreshing={isRefreshing('github')}>
+            <div className="space-y-1.5">
+              {r.github?.profile?.html_url && (
+                <div className="dt-row"><span className="dt-label">Profile</span>
+                  <a href={r.github.profile.html_url} target="_blank" rel="noreferrer" className="text-blue hover:underline">{r.github.profile.html_url}</a>
+                </div>
+              )}
+              <DtRow label="Name" value={r.github?.profile?.name} />
+              <DtRow label="Type" value={r.github?.profile?.type} />
+              <DtRow label="Bio" value={r.github?.profile?.bio} />
+              <DtRow label="Company" value={r.github?.profile?.company} />
+              <DtRow label="Location" value={r.github?.profile?.location} />
+              <DtRow label="Blog" value={r.github?.profile?.blog} />
+              <DtRow label="Twitter" value={r.github?.profile?.twitter} />
+              <DtRow label="Followers" value={r.github?.profile?.followers} />
+              <DtRow label="Public Repos" value={r.github?.profile?.public_repos} />
+              <DtRow label="Total Stars" value={r.github?.total_stars} />
+              <DtRow label="Joined" value={r.github?.profile?.created_at} />
+            </div>
+            {(r.github?.top_languages?.length ?? 0) > 0 && (
+              <div className="mt-3">
+                <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Top Languages</div>
+                <div className="flex flex-wrap gap-1">
+                  {r.github?.top_languages?.map(l => (
+                    <span key={l.language} className="tag tag-blue">{l.language} ({l.count})</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {(r.github?.emails?.length ?? 0) > 0 && (
+              <div className="mt-3">
+                <div className="text-[10px] text-text-3 uppercase tracking-wider mb-2">Emails Found</div>
+                <div className="flex flex-wrap gap-1">
+                  {r.github?.emails?.map(e => (
+                    <span key={e} className="inline-flex items-center gap-1">
+                      <span className="tag tag-red">{e}</span>
+                      <CopyIconButton onClick={() => copyValue(e)} label="Copy email" />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </KeyModuleCard>
         )}
 
         {tab === 'threats' && (

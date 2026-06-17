@@ -34,7 +34,8 @@
       "leaks": "Fuites",
       "hlr": "Téléphone",
       "blackbird": "Blackbird",
-      "maigret": "Maigret"
+      "maigret": "Maigret",
+      "github": "GitHub"
     },
     "runScan": "Lancer l'analyse",
     "scanning": "Analyse en cours…",
@@ -54,7 +55,9 @@
       "L'onglet Graphe affiche les relations entre entités",
       "L'onglet Carte affiche la géolocalisation IP",
       "Utilisez le module Dorks pour trouver des fichiers exposés",
-      "Le score OPSEC évalue le risque d'exposition de la cible"
+      "Le score OPSEC évalue le risque d'exposition de la cible",
+      "Exportez les analyses en CSV ou Markdown",
+      "Comparez deux analyses depuis l'historique"
     ]
   },
   "idle": {
@@ -81,7 +84,8 @@
       "qr":       { "label": "Décodeur QR",            "desc": "Décoder et analyser" },
       "mac":      { "label": "Recherche MAC",          "desc": "Recherche de fournisseur" },
       "subnet":   { "label": "IP / Sous-réseau", "desc": "Plages réseau & CIDR" },
-      "hash":     { "label": "Identificateur de Hash",  "desc": "Identifier les types de hash" }
+      "hash":     { "label": "Identificateur de Hash",  "desc": "Identifier les types de hash" },
+      "encoder":  { "label": "Base64 / URL", "desc": "Encoder et décoder" }
     },
     "demo": {
       "line1": "Ceci est une démo publique avec des quotas API limités. Certains modules (Shodan, VirusTotal) peuvent être soumis à des limites de débit.",
@@ -241,6 +245,14 @@
       "length": "Longueur",
       "invalidHex": "Caractères hexadécimaux invalides. Les hashes ne contiennent que 0-9 et a-f.",
       "unsupportedLength": "Longueur de hash non supportée. Attendu : 32 (MD5), 40 (SHA-1), 64 (SHA-256) ou 128 (SHA-512) caractères."
+    },
+    "encoder": {
+      "title": "Encodeur Base64 et URL",
+      "placeholder": "Saisissez le texte à encoder ou décoder…",
+      "encode": "Encoder",
+      "decode": "Décoder",
+      "output": "Résultat",
+      "invalid": "Entrée invalide pour le mode sélectionné."
     }
   },
   "common": {

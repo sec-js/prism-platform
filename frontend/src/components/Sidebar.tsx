@@ -22,7 +22,7 @@ const MODULE_MAP: Record<ScanType, string[]> = {
   ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
   email:    ['emailrep', 'smtp', 'leaks'],
   phone:    ['hlr'],
-  username: ['blackbird', 'maigret'],
+  username: ['blackbird', 'maigret', 'github'],
 };
 
 interface Props {
