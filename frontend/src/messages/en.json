@@ -85,7 +85,8 @@
       "mac":      { "label": "MAC Lookup",      "desc": "Vendor lookup" },
       "subnet":   { "label": "IP / Subnet",     "desc": "Network ranges & CIDR" },
       "hash":     { "label": "Hash Identifier", "desc": "Identify hash types" },
-      "encoder":  { "label": "Base64 / URL", "desc": "Encode & decode" }
+      "encoder":  { "label": "Base64 / URL", "desc": "Encode & decode" },
+      "jwt": { "label": "JWT Decoder", "desc": "Decode JWT tokens" }
     },
     "demo": {
       "line1": "This is a public demo with limited API quotas. Some modules (Shodan, VirusTotal) may be rate-limited.",
@@ -187,6 +188,19 @@
       "decode": "Decode",
       "output": "Output",
       "invalid": "Invalid input for the selected mode."
+    },
+    "jwt": {
+      "title": "JWT Decoder",
+      "placeholder": "Paste a JWT token(eyj...)...",
+      "decode": "Decode",
+      "header": "Header",
+      "playload": "Payload",
+      "issuedAt": "Issued At",
+      "expiresAt": "Expires At",
+      "notBefore": "Not before",
+      "expired": "⚠ Token expired",
+      "noSignatureWarning": "Signature is not verified - this tool only decodes.",
+      "invalid": "Invalid JWT format. Expected tthree dot-seperated parts: header.playload.signature"
     }
   },
   "progress": {

@@ -1,6 +1,6 @@
 export type ScanType = 'domain' | 'ip' | 'email' | 'phone' | 'username';
 export type ScanStatus = 'idle' | 'running' | 'completed' | 'failed';
-export type ToolMode = 'metadata' | 'headers' | 'crypto' | 'qr' | 'mac' | 'subnet' | 'hash' | 'encoder' | null;
+export type ToolMode = 'metadata' | 'headers' | 'crypto' | 'qr' | 'mac' | 'subnet' | 'hash' | 'encoder' | 'jwt' | null;
 
 /** Standard per-module result status (mirrors modules/module_status.py). */
 export type ModuleStatus = 'ok' | 'skipped' | 'rate_limited' | 'error';
@@ -326,5 +326,14 @@ export interface MetaResult {
 export interface MacResult {
   mac?: string;
   vendor?: string | null;
+  error?: string;
+}
+
+export interface JwtResult {
+  header?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
+  exp?: string | null;
+  iat?: string | null;
+  nbf?: string | null;
   error?: string;
 }

@@ -134,7 +134,6 @@ function DropZone({ accept, file, onChange, hint }: { accept: string; file: File
     </label>
   );
 }
-
 function QrPanel() {
   const { t } = useTranslations();
   const [file, setFile] = useState<File | null>(null);
@@ -312,7 +311,6 @@ function HashPanel() {
 
     if (!trimmed) return;
 
-    // Check if it's valid hex
     if (!/^[a-f0-9]*$/.test(trimmed)) {
       setError(t('toolPanels.hash.invalidHex'));
       return;
@@ -356,7 +354,6 @@ function HashPanel() {
     </div>
   );
 }
-
 function EncoderPanel() {
   const { t } = useTranslations();
   const [input, setInput] = useState('');
@@ -421,6 +418,90 @@ function EncoderPanel() {
   );
 }
 
+function base64UrlDecode(str: string): string {
+  const padded = str.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = padded.length % 4;
+  const withPad = pad ? padded + '='.repeat(4 - pad) : padded;
+  return decodeURIComponent(escape(atob(withPad)));
+}
+
+function formatTimestamp(value: unknown): string | null {
+  if (typeof value !== 'number') return null;
+  const date = new Date(value * 1000);
+  if (isNaN(date.getTime())) return null;
+  return date.toLocaleString();
+}
+
+function JwtPanel() {
+  const { t } = useTranslations();
+  const [token, setToken] = useState('');
+  const [result, setResult] = useState<import('@/lib/types').JwtResult | null>(null);
+
+  const run = () => {
+    const trimmed = token.trim();
+    if (!trimmed) return;
+    const parts = trimmed.split('.');
+    if (parts.length !== 3) {
+      setResult({ error: t('toolPanels.jwt.invalid') });
+      return;
+    }
+    try {
+      const header = JSON.parse(base64UrlDecode(parts[0]));
+      const payload = JSON.parse(base64UrlDecode(parts[1]));
+      setResult({
+        header,
+        payload,
+        iat: formatTimestamp(payload.iat),
+        exp: formatTimestamp(payload.exp),
+        nbf: formatTimestamp(payload.nbf),
+      });
+    } catch {
+      setResult({ error: t('toolPanels.jwt.invalid') });
+    }
+  };
+
+  const isExpired = result?.payload && typeof result.payload.exp === 'number' && result.payload.exp * 1000 < Date.now();
+
+  return (
+    <div>
+      <Card title={t('toolPanels.jwt.title')}>
+        <textarea
+          value={token}
+          onChange={e => setToken(e.target.value)}
+          placeholder={t('toolPanels.jwt.placeholder')}
+          className="input-field font-mono text-[11px] resize-y leading-relaxed w-full mb-3"
+          rows={4}
+        />
+        <RunBtn loading={false} label={t('toolPanels.jwt.decode')} onClick={run} disabled={!token.trim()} />
+      </Card>
+      {result && (
+        result.error ? (
+          <ErrorCard label={t('toolPanels.error')} message={result.error} />
+        ) : (
+          <div>
+            {isExpired && (
+              <div className="text-[11px] text-red mb-2 px-1">{t('toolPanels.jwt.expired')}</div>
+            )}
+            <Card title={t('toolPanels.jwt.header')}>
+              <textarea readOnly value={JSON.stringify(result.header, null, 2)} rows={4}
+                className="input-field font-mono text-[11px] resize-y leading-relaxed w-full" />
+            </Card>
+            <Card title={t('toolPanels.jwt.payload')}>
+              <textarea readOnly value={JSON.stringify(result.payload, null, 2)} rows={8}
+                className="input-field font-mono text-[11px] resize-y leading-relaxed w-full" />
+            </Card>
+            <Card>
+              <Row label={t('toolPanels.jwt.issuedAt')} value={result.iat ?? undefined} />
+              <Row label={t('toolPanels.jwt.expiresAt')} value={result.exp ?? undefined} />
+              <Row label={t('toolPanels.jwt.notBefore')} value={result.nbf ?? undefined} />
+            </Card>
+            <div className="text-[10px] text-text-3 px-1">{t('toolPanels.jwt.noSignatureWarning')}</div>
+          </div>
+        )
+      )}
+    </div>
+  );
+}
 function HeadersPanel() {
   const { t } = useTranslations();
   const [text, setText] = useState('');
@@ -491,7 +572,6 @@ function HeadersPanel() {
 function SubnetPanel() {
   const { t } = useTranslations();
 
-  // ── pure-JS subnet math (no external deps) ──────────────────────────────
   function ipToInt(ip: string): number {
     return ip.split('.').reduce((acc, oct) => (acc << 8) + parseInt(oct, 10), 0) >>> 0;
   }
@@ -577,7 +657,6 @@ function SubnetPanel() {
   return (
     <div>
       <Card>
-        {/* Mode toggle */}
         <div className="flex gap-2 mb-3">
           {(['cidr', 'mask'] as const).map(m => (
             <button key={m} onClick={() => { setPrefixMode(m); setPrefix(m === 'cidr' ? '24' : '255.255.255.0'); setErrors({}); }}
@@ -587,7 +666,6 @@ function SubnetPanel() {
           ))}
         </div>
 
-        {/* Inputs */}
         <div className="flex gap-2 flex-wrap mb-2">
           <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
             <input className="input-field" value={ip} onChange={e => { setIp(e.target.value); setErrors(p => ({ ...p, ip: undefined })); }}
@@ -607,7 +685,6 @@ function SubnetPanel() {
           <RunBtn loading={false} label="Calculate" onClick={run} />
         </div>
 
-        {/* CIDR slider */}
         {prefixMode === 'cidr' && (
           <div className="mt-3">
             <input type="range" min="0" max="32"
@@ -643,6 +720,7 @@ const TOOL_TITLES: Record<string, string> = {
   crypto: 'Crypto Address Lookup', qr: 'QR Code Decoder',
   metadata: 'File Metadata & GEOINT', headers: 'Email Header Analyzer', mac: 'MAC Lookup',
   subnet: 'IP / Subnet Calculator', hash: 'Hash Identifier', encoder: 'Base64 & URL Encoder',
+  jwt: 'JWT Decoder',
 };
 
 interface Props {
@@ -673,6 +751,7 @@ export function ToolPanels({ mode, onBack }: Props) {
       {activePanel === 'mac' && <MacPanel />}
       {activePanel === 'hash' && <HashPanel />}
       {activePanel === 'encoder' && <EncoderPanel />}
+      {activePanel === 'jwt' && <JwtPanel />}
     </div>
   );
 }
