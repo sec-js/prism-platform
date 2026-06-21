@@ -11,6 +11,7 @@ class LeakLookup:
 
     HIBP_API = "https://haveibeenpwned.com/api/v3"
     LEAK_LOOKUP_API = "https://leak-lookup.com/api/search"
+    XON_API = "https://api.xposedornot.com/v1"
 
     def __init__(self):
         self.leak_lookup_key = LEAK_LOOKUP_API_KEY
@@ -69,6 +70,48 @@ class LeakLookup:
                 annotate(result, RATE_LIMITED, "HIBP API rate limit reached")
             else:
                 result["error"] = f"HIBP returned status {response.status_code}"
+
+        except requests.exceptions.RequestException as e:
+            result["error"] = str(e)
+
+        return result
+
+    def check_email_xon(self, email: str) -> Dict[str, Any]:
+        result = {
+            "email": email,
+            "breached": False,
+            "breaches": [],
+            "total_breaches": 0,
+            "error": None
+        }
+
+        try:
+            response = requests.get(
+                f"{self.XON_API}/check-email/{email}",
+                headers={"User-Agent": "OSINT-Tool"},
+                timeout=10
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                names: List[str] = []
+                for group in (data.get("breaches") or []):
+                    if isinstance(group, list):
+                        names.extend(str(n) for n in group if n)
+                    elif group:
+                        names.append(str(group))
+                if names:
+                    result["breached"] = True
+                    result["total_breaches"] = len(names)
+                    result["breaches"] = [{"name": n, "title": n} for n in names]
+                result["status"] = OK
+            elif response.status_code == 404:
+                result["breached"] = False
+                result["status"] = OK
+            elif response.status_code == 429:
+                annotate(result, RATE_LIMITED, "XposedOrNot rate limit reached")
+            else:
+                result["error"] = f"XposedOrNot returned status {response.status_code}"
 
         except requests.exceptions.RequestException as e:
             result["error"] = str(e)
@@ -158,35 +201,58 @@ class LeakLookup:
         return result
 
     def check_email_full(self, email: str) -> Dict[str, Any]:
+        xon = self.check_email_xon(email)
+        hibp = self.check_email_hibp(email)
+        leak_lookup = self.check_leak_lookup(email, "email_address") if self.leak_lookup_key else None
+
+        flat: List[Dict[str, Any]] = []
+        seen = set()
+        for b in hibp.get("breaches", []):
+            name = b.get("name")
+            if not name or name.lower() in seen:
+                continue
+            seen.add(name.lower())
+            flat.append({
+                "name": name,
+                "title": b.get("title") or name,
+                "date": b.get("breach_date"),
+                "data_classes": b.get("data_classes", []),
+                "source": "HIBP",
+            })
+        for b in xon.get("breaches", []):
+            name = b.get("name")
+            if not name or name.lower() in seen:
+                continue
+            seen.add(name.lower())
+            flat.append({"name": name, "title": name, "source": "XposedOrNot"})
+        if leak_lookup:
+            for leak in leak_lookup.get("leaks", []):
+                name = leak.get("source")
+                if name and name.lower() not in seen:
+                    seen.add(name.lower())
+                    flat.append({"name": name, "title": name, "source": "Leak-Lookup"})
+
+        total = len(flat)
         result = {
             "email": email,
-            "hibp": self.check_email_hibp(email),
-            "leak_lookup": self.check_leak_lookup(email, "email_address") if self.leak_lookup_key else None
+            "xon": xon,
+            "hibp": hibp,
+            "leak_lookup": leak_lookup,
+            "breaches": flat[:50],
+            "found": total > 0,
+            "total": total,
+            "breach_count": total,
+            "is_compromised": total > 0,
+            "total_breaches": total,
         }
 
-        result["total_breaches"] = 0
-        result["is_compromised"] = False
-
-        if result["hibp"]["breached"]:
-            result["is_compromised"] = True
-            result["total_breaches"] += result["hibp"]["total_breaches"]
-
-        if result["leak_lookup"] and result["leak_lookup"]["found"]:
-            result["is_compromised"] = True
-            result["total_breaches"] += len(result["leak_lookup"]["leaks"])
-
-        # A working source wins; otherwise surface rate-limited/skipped state.
-        sub_statuses = [classify(result["hibp"])]
-        if result["leak_lookup"] is not None:
-            sub_statuses.append(classify(result["leak_lookup"]))
-        else:
-            sub_statuses.append(SKIPPED)
+        sub_statuses = [classify(xon), classify(hibp)]
+        if leak_lookup is not None:
+            sub_statuses.append(classify(leak_lookup))
 
         for level in (OK, RATE_LIMITED, SKIPPED, ERROR):
             if level in sub_statuses:
-                reason = None
-                if level != OK:
-                    reason = self._aggregate_reason(level, result)
+                reason = self._aggregate_reason(level, result) if level != OK else None
                 annotate(result, level, reason)
                 break
 
@@ -195,7 +261,7 @@ class LeakLookup:
     @staticmethod
     def _aggregate_reason(level: str, result: Dict[str, Any]) -> Optional[str]:
         from modules.module_status import reason_for
-        for sub in (result.get("hibp"), result.get("leak_lookup")):
+        for sub in (result.get("xon"), result.get("hibp"), result.get("leak_lookup")):
             if isinstance(sub, dict) and classify(sub) == level:
                 return reason_for(sub)
         if level == SKIPPED:
@@ -228,6 +294,14 @@ class LeakLookup:
                     print(f"    Data: {', '.join(breach.get('data_classes', [])[:5])}")
                 if len(hibp["breaches"]) > 10:
                     print(f"    ... and {len(hibp['breaches']) - 10} more")
+
+            xon = result.get("xon", {})
+            if xon.get("breaches"):
+                print(f"\n{Colors.BOLD}XposedOrNot Breaches:{Colors.RESET}")
+                for breach in xon["breaches"][:10]:
+                    print(f"  {Colors.RED}•{Colors.RESET} {breach['name']}")
+                if len(xon["breaches"]) > 10:
+                    print(f"    ... and {len(xon['breaches']) - 10} more")
 
             ll = result.get("leak_lookup")
             if ll and ll.get("leaks"):
