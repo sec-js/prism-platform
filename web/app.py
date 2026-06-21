@@ -609,6 +609,10 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
 async def healthz():
     return {"status": "ok"}
 
+@app.get("/api/health")
+async def health():
+    return {"status": "ok", "version": app.version}
+
 @app.post("/api/scan", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def start_scan(request: Request, req: ScanRequest):

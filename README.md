@@ -485,6 +485,7 @@ The backend exposes a REST + WebSocket API. Application requests require an `X-A
 | `GET`  | `/api/scan/{id}/report/pdf` | PDF report |
 | `GET`  | `/api/scans` | List past scans (per-principal) |
 | `GET`  | `/healthz` | Unauthenticated health check |
+| `GET`  | `/api/health` | Unauthenticated health check for uptime monitors and load balancers |
 | `WS`   | `/ws/{scan_id}` | Live scan progress stream |
 | `POST` | `/api/ai/summary`, `/api/ai/chat` | AI summary and Q&A |
 | `POST` | `/api/url-scan`, `/api/mac-lookup`, `/api/crypto`, `/api/darkweb`, `/api/qr-decode`, `/api/email-headers`, `/api/metadata` | Standalone tools |
