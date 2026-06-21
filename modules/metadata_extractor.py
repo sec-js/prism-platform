@@ -207,6 +207,8 @@ def extract_image_metadata(file_path: str) -> Dict[str, Any]:
         from PIL import Image
         from PIL.ExifTags import TAGS, GPSTAGS
 
+        Image.MAX_IMAGE_PIXELS = 50_000_000
+
         result["size_bytes"] = os.path.getsize(file_path)
 
         with Image.open(file_path) as img:

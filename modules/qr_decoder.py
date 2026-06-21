@@ -1,16 +1,26 @@
 import requests
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Tuple
 
 
 class QRDecoder:
 
-    def decode(self, image_bytes: bytes, filename: str = "qr.png") -> Dict[str, Any]:
-        result = {
-            "decoded": None,
-            "type": None,
-            "is_url": False,
-            "error": None,
-        }
+    def _decode_local(self, image_bytes: bytes) -> Optional[str]:
+        try:
+            import cv2
+            import numpy as np
+        except Exception:
+            return None
+        try:
+            arr = np.frombuffer(image_bytes, dtype=np.uint8)
+            img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            if img is None:
+                return None
+            data, _, _ = cv2.QRCodeDetector().detectAndDecode(img)
+            return data or None
+        except Exception:
+            return None
+
+    def _decode_api(self, image_bytes: bytes, filename: str) -> Tuple[Optional[str], Optional[str]]:
         try:
             r = requests.post(
                 "https://api.qrserver.com/v1/read-qr-code/",
@@ -18,48 +28,62 @@ class QRDecoder:
                 timeout=15,
             )
             if r.status_code != 200:
-                result["error"] = f"API returned HTTP {r.status_code}"
-                return result
-
+                return None, f"API returned HTTP {r.status_code}"
             data = r.json()
             if not data or not isinstance(data, list):
-                result["error"] = "Unexpected API response"
-                return result
-
+                return None, "Unexpected API response"
             symbols = data[0].get("symbol", [])
             if not symbols:
-                result["error"] = "No QR code detected in the image"
-                return result
-
-            error = symbols[0].get("error")
-            if error:
-                result["error"] = error
-                return result
-
-            decoded = symbols[0].get("data", "")
-            result["decoded"] = decoded
-
-            if decoded.startswith(("http://", "https://")):
-                result["is_url"] = True
-                result["type"] = "URL"
-            elif decoded.startswith("WIFI:"):
-                result["type"] = "Wi-Fi credentials"
-            elif decoded.startswith("BEGIN:VCARD") or decoded.startswith("MECARD:"):
-                result["type"] = "Contact (vCard)"
-            elif decoded.startswith("BEGIN:VEVENT"):
-                result["type"] = "Calendar event"
-            elif decoded.startswith("mailto:"):
-                result["type"] = "Email"
-            elif decoded.startswith("tel:"):
-                result["type"] = "Phone number"
-            elif decoded.startswith("geo:"):
-                result["type"] = "Geolocation"
-            elif decoded.startswith("bitcoin:") or decoded.startswith("ethereum:"):
-                result["type"] = "Crypto address"
-            else:
-                result["type"] = "Plain text"
-
+                return None, "No QR code detected in the image"
+            err = symbols[0].get("error")
+            if err:
+                return None, err
+            return (symbols[0].get("data", "") or None), None
         except Exception as e:
-            result["error"] = str(e)
+            return None, str(e)
 
+    def _classify(self, decoded: str) -> Tuple[str, bool]:
+        if decoded.startswith(("http://", "https://")):
+            return "URL", True
+        if decoded.startswith("WIFI:"):
+            return "Wi-Fi credentials", False
+        if decoded.startswith("BEGIN:VCARD") or decoded.startswith("MECARD:"):
+            return "Contact (vCard)", False
+        if decoded.startswith("BEGIN:VEVENT"):
+            return "Calendar event", False
+        if decoded.startswith("mailto:"):
+            return "Email", False
+        if decoded.startswith("tel:"):
+            return "Phone number", False
+        if decoded.startswith("geo:"):
+            return "Geolocation", False
+        if decoded.startswith("bitcoin:") or decoded.startswith("ethereum:"):
+            return "Crypto address", False
+        return "Plain text", False
+
+    def decode(self, image_bytes: bytes, filename: str = "qr.png") -> Dict[str, Any]:
+        result = {
+            "decoded": None,
+            "type": None,
+            "is_url": False,
+            "source": None,
+            "error": None,
+        }
+
+        decoded = self._decode_local(image_bytes)
+        if decoded:
+            result["source"] = "local"
+        else:
+            decoded, err = self._decode_api(image_bytes, filename)
+            result["source"] = "api"
+            if err:
+                result["error"] = err
+                return result
+
+        if not decoded:
+            result["error"] = "No QR code detected in the image"
+            return result
+
+        result["decoded"] = decoded
+        result["type"], result["is_url"] = self._classify(decoded)
         return result
