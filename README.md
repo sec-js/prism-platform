@@ -689,6 +689,12 @@ For security issues, see [SECURITY.md](SECURITY.md).
 
 ---
 
+## Development note
+
+PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (137 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
+
+---
+
 ## License
 
 MIT
