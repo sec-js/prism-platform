@@ -949,6 +949,9 @@ export function ScanResults({ scan }: Props) {
 
         {tab === 'accounts' && (
           <Card title="Username Search" onRefresh={() => refreshModule('blackbird')} refreshing={isRefreshing('blackbird')}>
+            <div className="text-[11px] text-text-3 leading-relaxed mb-3">
+              Heuristic matches from profile-page responses — false positives are possible on sites that serve a page for any username. Open each link to confirm before relying on it.
+            </div>
             <div className="mb-3">
               <div className="relative">
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-3" />
@@ -1367,6 +1370,9 @@ export function ScanResults({ scan }: Props) {
         {tab === 'ai' && (
           <div>
             <Card title="AI OSINT Analysis · Nvidia Nemotron">
+              <div className="text-[11px] text-text-3 leading-relaxed mb-3 pb-3 border-b border-border-1">
+                AI-generated and may be inaccurate or incomplete — treat it as a lead, not a verified finding. Generating a summary sends this scan's data to the configured LLM provider (OpenRouter / Groq). Disable the AI module if you don't want that.
+              </div>
               {!aiSummary && !aiLoading && (
                 <button onClick={runAi} className="btn-primary w-full">
                   <Brain size={13} /> Generate AI Summary

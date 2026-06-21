@@ -6,11 +6,11 @@ PRISM is a self-hosted OSINT platform. Even though every scan it performs is **p
 
 | Version | Supported          |
 |---------|--------------------|
-| 2.3.x   | Active support     |
-| 2.2.x   | Security fixes only |
-| < 2.2   | Unsupported        |
+| 2.4.x   | Active support     |
+| 2.3.x   | Security fixes only |
+| < 2.3   | Unsupported        |
 
-Please upgrade to the latest `2.3.x` release before reporting any issue.
+Please upgrade to the latest `2.4.x` release before reporting any issue.
 
 ## Reporting a Vulnerability
 

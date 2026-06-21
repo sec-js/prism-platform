@@ -29,7 +29,7 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 
 ### Table of Contents
 
-[Why PRISM?](#why-prism) • [Overview](#overview) • [Why PRISM vs alternatives?](#why-prism-vs-alternatives) • [Use cases](#use-cases) • [Features](#features) • [Showcase](#showcase) • [Quick Start](#quick-start) • [Configuration](#configuration) • [API](#api) • [Project Structure](#project-structure) • [Running Tests](#running-tests) • [CI/CD](#cicd) • [Roadmap](#roadmap) • [Star History](#star-history) • [Legal Notice](#legal-notice) • [Support the project](#support-the-project) • [Contributing](#contributing) • [License](#license)
+[Why PRISM?](#why-prism) • [Overview](#overview) • [Why PRISM vs alternatives?](#why-prism-vs-alternatives) • [Use cases](#use-cases) • [Features](#features) • [Showcase](#showcase) • [Quick Start](#quick-start) • [Configuration](#configuration) • [API](#api) • [Project Structure](#project-structure) • [Running Tests](#running-tests) • [CI/CD](#cicd) • [Roadmap](#roadmap) • [Star History](#star-history) • [Legal Notice](#legal-notice) • [Support the project](#support-the-project) • [Contributing](#contributing) • [Credits](#credits) • [License](#license)
 
 </div>
 
@@ -95,17 +95,16 @@ flowchart LR
 | Capability                        | **PRISM**             | SpiderFoot CE | theHarvester | Recon-ng    | Maltego CE |
 |-----------------------------------|-----------------------|---------------|--------------|-------------|------------|
 | Modern web dashboard              | ✅ Next.js 14         | ⚠️ legacy     | ❌ CLI only  | ❌ CLI only | ✅ desktop |
-| Real-time scan progress (WS)      | ✅                    | ❌            | ❌           | ❌          | ❌         |
+| Real-time scan progress           | ✅                    | ⚠️            | ❌           | ❌          | ❌         |
 | AI-powered summary + chat         | ✅ LLM                | ❌            | ❌           | ❌          | ❌         |
 | OPSEC score (0–100)               | ✅                    | ❌            | ❌           | ❌          | ❌         |
 | Entity graph (interactive)        | ✅                    | ✅            | ❌           | ❌          | ✅         |
 | GeoIP map (multi-marker)          | ✅ Leaflet            | ⚠️ basic      | ❌           | ❌          | ⚠️         |
-| HTML + PDF report export          | ✅ EN/RU/DE/FR/ES           | ⚠️ HTML       | ❌           | ⚠️          | ⚠️         |
+| HTML + PDF report export          | ✅ EN/RU/DE/FR/ES           | ⚠️ HTML       | ⚠️ HTML      | ⚠️          | ⚠️         |
 | Multi-language UI                 | ✅ EN/RU/DE/FR/ES           | ❌            | ❌           | ❌          | ❌         |
 | Zero-key out of the box           | ✅ 14/22 modules      | ⚠️            | ⚠️           | ⚠️          | ❌         |
 | Webhook callbacks (signed)        | ✅                    | ❌            | ❌           | ❌          | ❌         |
-| One-command Docker deploy         | ✅                    | ⚠️            | ❌           | ⚠️          | ❌         |
-| MIT license                       | ✅                    | ❌ GPLv2      | ✅           | ✅ GPLv3    | ❌         |
+| One-command Docker deploy         | ✅                    | ⚠️            | ⚠️           | ⚠️          | ❌         |
 
 ---
 
@@ -641,12 +640,18 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
 ## Legal Notice
 
-This tool is intended **exclusively for lawful use**:
-- Authorized security assessments and penetration testing
-- Research on infrastructure you own or have explicit permission to test
+This tool is intended **exclusively for lawful, authorized use**:
+- Security assessments and penetration testing you are authorized to perform
+- Research on infrastructure, accounts, or data you own or have explicit permission to investigate
+- Auditing your own digital footprint
 - Academic and educational purposes
 
-Do **not** use PRISM for unauthorized data collection, surveillance, or any activity that violates applicable law. The author assumes no liability for misuse.
+Every scan PRISM performs is passive and queries only publicly available data — but aggregating public data can still cause real harm. Do **not** use PRISM to:
+- Stalk, harass, dox, or surveil any person without their consent
+- Profile or track individuals you have no authorization to investigate
+- Collect data in violation of applicable law or the terms of service of the platforms involved
+
+You are responsible for how you use the results. The author assumes no liability for misuse.
 
 ---
 
@@ -693,6 +698,25 @@ For security issues, see [SECURITY.md](SECURITY.md).
 ## Development note
 
 PRISM is built solo, with AI coding assistance as part of the workflow. All code is reviewed and tested (137 passing tests covering module mocking, SSRF/auth, and reverse-proxy behavior), and the project is MIT-licensed and fully open to audit. Bug reports and contributions are very welcome.
+
+---
+
+## Credits
+
+PRISM stands on the shoulders of excellent open-source projects and public data sources.
+
+**Tools & techniques**
+- [Maigret](https://github.com/soxoj/maigret) — username search across thousands of sites (run as a subprocess)
+- Username heuristics inspired by [Sherlock](https://github.com/sherlock-project/sherlock) and [Blackbird](https://github.com/p1ngul1n0/blackbird)
+
+**Data sources & APIs**
+- crt.sh, Wayback Machine, Shodan, VirusTotal, AbuseIPDB, Censys, Ahmia, XposedOrNot, ipinfo.io, CoinGecko, BlockCypher, blockchain.info, Ethplorer, api.qrserver.com
+
+**Core libraries**
+- Backend: FastAPI, Uvicorn, Pydantic, SQLAlchemy, slowapi, phonenumbers, dnspython, python-whois, Pillow, xhtml2pdf
+- Frontend: Next.js, React, Tailwind CSS, Leaflet
+
+Each project is the property of its respective authors and used under its own license. PRISM itself is MIT-licensed.
 
 ---
 
