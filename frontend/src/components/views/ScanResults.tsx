@@ -155,7 +155,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
       return (
         <div className="text-[12px]">
           <div className="text-text-2 mb-2">{data.info.reason || 'No precise coordinates available.'}</div>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-1 max-w-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 max-w-md">
             {data.info.country && <div className="dt-row"><span className="dt-label">Country</span><span className="dt-value">{data.info.country}</span></div>}
             {data.info.region && <div className="dt-row"><span className="dt-label">Region</span><span className="dt-value">{data.info.region}</span></div>}
             {data.info.carrier && <div className="dt-row"><span className="dt-label">Carrier</span><span className="dt-value">{data.info.carrier}</span></div>}
@@ -171,7 +171,7 @@ function MapView({ scanId, onCopy }: { scanId: string; onCopy: (value: string) =
   return (
     <div>
       <div ref={mapHostRef} className="w-full rounded-md border border-border-1 h-64 sm:h-[360px]" />
-      <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-[12px]">
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-[12px]">
         {m.ip && (
           <div className="dt-row">
             <span className="dt-label">IP</span>
