@@ -20,6 +20,8 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](Dockerfile)
 [![GitHub stars](https://img.shields.io/github/stars/NovaCode37/Prism-platform?style=flat-square&logo=github&color=yellow&cacheSeconds=3600)](https://github.com/NovaCode37/Prism-platform/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/NovaCode37/Prism-platform?style=flat-square&logo=github&cacheSeconds=3600)](https://github.com/NovaCode37/Prism-platform/network/members)
+[![Contributors](https://img.shields.io/github/contributors/NovaCode37/Prism-platform?style=flat-square&logo=github)](https://github.com/NovaCode37/Prism-platform/graphs/contributors)
+[![Downloads](https://img.shields.io/github/downloads/NovaCode37/Prism-platform/total?style=flat-square&logo=github&label=downloads)](https://github.com/NovaCode37/Prism-platform/releases)
 
 </div>
 
