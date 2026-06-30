@@ -638,6 +638,7 @@ async def start_scan(request: Request, req: ScanRequest):
         "owner": get_principal(request),
         "results": None,
         "progress": [],
+        "modules": req.modules,
         "force_refresh": req.force_refresh,
     }
     _save_scan(scan_id, _scans[scan_id])

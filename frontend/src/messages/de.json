@@ -215,6 +215,7 @@
     "jsonReport": "JSON herunterladen",
     "csvReport": "CSV herunterladen",
     "mdReport": "Markdown herunterladen",
+    "copyCurl": "Als cURL kopieren",
     "scanAnother": "Neuer Scan",
     "tabs": {
       "findings": "Befunde",

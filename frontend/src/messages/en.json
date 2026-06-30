@@ -215,6 +215,7 @@
     "jsonReport": "Download JSON",
     "csvReport": "Download CSV",
     "mdReport": "Download Markdown",
+    "copyCurl": "Copy as cURL",
     "scanAnother": "Scan another",
     "tabs": {
       "findings": "Findings",

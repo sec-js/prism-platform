@@ -674,6 +674,25 @@ export function ScanResults({ scan, onHome }: Props) {
     }
   };
 
+  const copyAsCurl = async () => {
+    const body = {
+      target: scan.target,
+      scan_type: scan.scan_type,
+      modules: scan.modules,
+      force_refresh: false,
+    };
+
+    const apiUrl = `${window.location.origin}/api/scan`;
+
+    const curl = [
+      `curl -X POST "${apiUrl}"`,
+      '-H "Content-Type: application/json"',
+      `-d '${JSON.stringify(body)}'`,
+    ].join(" \\\n");
+
+    await copyValue(curl);
+  };
+
   const scanDuration = (() => {
     if (!scan.started_at || !scan.completed_at) return null;
     const ms = new Date(scan.completed_at).getTime() - new Date(scan.started_at).getTime();
@@ -796,6 +815,10 @@ export function ScanResults({ scan, onHome }: Props) {
           <button type="button" onClick={downloadMarkdown}
             className="btn-ghost text-[11px] h-8 px-3">
             <FileText size={11} /> {i18n('results.mdReport') !== 'results.mdReport' ? i18n('results.mdReport') : 'Markdown'}
+          </button>
+          <button type="button" onClick={copyAsCurl}
+            className="btn-ghost text-[11px] h-8 px-3">
+            <Copy size={11} /> {i18n('results.copyCurl') !== 'results.copyCurl' ? i18n('results.copyCurl') : 'cURL'}
           </button>
           {allEmails.length >= 2 && (
             <button type="button" onClick={copyAllEmails}

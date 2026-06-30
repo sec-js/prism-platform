@@ -107,6 +107,7 @@
     "jsonReport": "Télécharger JSON",
     "csvReport": "Télécharger CSV",
     "mdReport": "Télécharger Markdown",
+    "copyCurl": "Copier en tant que cURL",
     "scanAnother": "Nouvelle analyse",
     "tabs": {
       "findings": "Résultats",

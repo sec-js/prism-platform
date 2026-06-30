@@ -18,6 +18,7 @@ export interface ScanMeta {
   target: string;
   scan_type: ScanType;
   status: ScanStatus;
+  modules: string[];
   started_at?: string;
   completed_at?: string;
 }

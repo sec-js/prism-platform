@@ -215,6 +215,7 @@
     "jsonReport": "Скачать JSON",
     "csvReport": "Скачать CSV",
     "mdReport": "Скачать Markdown",
+    "copyCurl": "Копировать как cURL",
     "scanAnother": "Новое сканирование",
     "tabs": {
       "findings": "Находки",

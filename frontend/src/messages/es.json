@@ -92,7 +92,7 @@
   "progress": { "modulesLabel": "módulos", "initializing": "Inicializando escaneo…", "running": "Ejecutando…", "log": "Registro de progreso" },
   "results": {
     "htmlReport": "Informe HTML", "pdfReport": "Informe PDF", "jsonReport": "Descargar JSON",
-    "csvReport": "Descargar CSV", "mdReport": "Descargar Markdown", "scanAnother": "Escanear otro",
+    "csvReport": "Descargar CSV", "mdReport": "Descargar Markdown", "copyCurl": "Copiar como cURL", "scanAnother": "Escanear otro",
     "tabs": { "findings": "Hallazgos", "whois": "WHOIS", "dns": "DNS", "subdomains": "Subdominios", "accounts": "Cuentas", "threats": "Amenazas", "censys": "Censys", "darkweb": "Dark Web", "wayback": "Wayback", "email": "Correo", "dorks": "Dorks", "phone": "Teléfono", "telegram": "Telegram", "map": "Mapa", "graph": "Grafo", "json": "JSON", "ai": "IA" },
     "opsec": {
       "scoreLabel": "Puntuación OPSEC", "riskSuffix": "RIESGO",
