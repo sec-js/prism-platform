@@ -43,6 +43,7 @@
       "emailrep": "Email Rep",
       "smtp": "SMTP Verify",
       "leaks": "Breach Check",
+      "gravatar": "Gravatar",
       "hlr": "Phone Lookup",
       "blackbird": "Blackbird",
       "maigret": "Maigret",

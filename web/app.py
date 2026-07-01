@@ -502,6 +502,12 @@ async def _execute_scan(scan_id: str, target: str, scan_type: str, modules: list
                 results["emailrep"] = await _run_module(
                     scan_id, "emailrep", EmailRepLookup().lookup, target
                 )
+            
+            if want("gravatar"):
+                from modules.gravatar import GravatarRecon
+                results["gravatar"] = await _run_module(
+                    scan_id, "gravatar", GravatarRecon().lookup, target
+                )
 
         elif scan_type == "phone":
             if want("hlr"):
