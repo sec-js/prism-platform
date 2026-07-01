@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github } from 'lucide-react';
+import { ExternalLink, Printer, Download, Shield, AlertTriangle, Globe, Server, Lock, User, Clock, Zap, Phone, MessageCircle, Map, GitBranch, Code, Brain, ChevronDown, ChevronUp, SendHorizontal, Mail, Copy, Eye, ShieldAlert, ArrowUp, FileSpreadsheet, FileText, Search, RefreshCw, Loader2, Github, UserCircle } from 'lucide-react';
 import type { ScanResults, ScanMeta, OpsecFinding, ModuleStatus, ModuleStatusFields, ScanType } from '@/lib/types';
 import { fetchReportBlob, generateAiSummary, sendAiChat, getMapData, getGraphData, startScan, getScan } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
@@ -410,6 +410,7 @@ const TABS = [
   { id: 'darkweb', label: 'Dark Web', icon: ShieldAlert },
   { id: 'wayback', label: 'Wayback', icon: Clock },
   { id: 'email', label: 'Email', icon: Mail },
+  { id: 'gravatar', label: 'Gravatar', icon: UserCircle },
   { id: 'dorks', label: 'Dorks', icon: Zap },
   { id: 'phone', label: 'Phone', icon: Phone },
   { id: 'telegram', label: 'Telegram', icon: MessageCircle },
@@ -729,7 +730,8 @@ export function ScanResults({ scan, onHome }: Props) {
     if (t.id === 'censys') return r.censys && modStatus(r.censys) === 'ok';
     if (t.id === 'darkweb') return r.onion && !r.onion.error && (r.onion.total_found ?? 0) > 0;
     if (t.id === 'wayback') return r.wayback;
-    if (t.id === 'email') return r.emailrep || r.smtp || r.breaches;
+    if (t.id === 'email') return r.emailrep || r.smtp || r.breaches || r.gravatar;
+    if (t.id === 'gravatar') return r.gravatar && modStatus(r.gravatar) === 'ok';
     if (t.id === 'dorks') return r.dorks?.length;
     if (t.id === 'phone') return r.phone;
     if (t.id === 'telegram') return r.telegram;
@@ -1324,6 +1326,62 @@ export function ScanResults({ scan, onHome }: Props) {
               </div>
             </KeyModuleCard>
           </div>
+        )}
+
+        {tab === 'gravatar' && (
+          <KeyModuleCard
+            title="Gravatar"
+            mod={r.gravatar}
+            onRefresh={() => refreshModule('gravatar')}
+            refreshing={isRefreshing('gravatar')}
+          >
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <DtRow label="Display Name" value={r.gravatar?.display_name} />
+                  {r.gravatar?.avatar_url && (
+                    <div className="dt-row">
+                      <span className="dt-label">Avatar URL</span>
+                      <a
+                        href={r.gravatar.avatar_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue hover:underline"
+                      >
+                        {r.gravatar.avatar_url}
+                      </a>
+                    </div>
+                  )}
+              </div>
+
+              {(r.gravatar?.accounts?.length ?? 0) > 0 && (
+                <div className="space-y-1.5">
+                  {r.gravatar?.accounts?.map(account => (
+                    <div
+                      key={account.url ?? account.name ?? account.display}
+                      className="dt-row"
+                    >
+                      <span className="dt-label">
+                        {account.name ?? "Account"}
+                      </span>
+
+                      {account.url ? (
+                        <a
+                          href={account.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue hover:underline break-all"
+                        >
+                          {account.display || account.url}
+                        </a>
+                      ) : (
+                        <span>{account.display || "-"}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </KeyModuleCard>
         )}
 
         {tab === 'dorks' && r.dorks && (

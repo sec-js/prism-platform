@@ -20,7 +20,7 @@ const SCAN_TYPES: ScanType[] = ['domain', 'ip', 'email', 'phone', 'username'];
 export const MODULE_MAP: Record<ScanType, string[]> = {
   domain:   ['whois', 'dns', 'geoip', 'cert_transparency', 'website', 'wayback', 'shodan', 'virustotal', 'censys', 'onion'],
   ip:       ['geoip', 'shodan', 'virustotal', 'abuseipdb', 'censys'],
-  email:    ['emailrep', 'smtp', 'leaks'],
+  email:    ['emailrep', 'smtp', 'leaks', 'gravatar'],
   phone:    ['hlr'],
   username: ['blackbird', 'maigret', 'github'],
 };

@@ -176,6 +176,19 @@ export interface BreachData extends ModuleStatusFields {
   error?: string;
 }
 
+export interface GravatarAccount {
+  name?: string;
+  display?: string;
+  url?: string;
+}
+
+export interface GravatarData extends ModuleStatusFields {
+  avatar_url?: string;
+  display_name?: string;
+  accounts?: GravatarAccount[];
+  error?: string;
+}
+
 export interface ScanResults {
   whois?: WhoisData;
   dns?: DnsRecord;
@@ -192,6 +205,7 @@ export interface ScanResults {
   emailrep?: EmailRepData;
   smtp?: SmtpData;
   breaches?: BreachData;
+  gravatar?: GravatarData;
   website?: Record<string, unknown>;
   dorks?: string[];
   censys?: CensysData;
