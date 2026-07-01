@@ -1358,7 +1358,8 @@ export function ScanResults({ scan, onHome }: Props) {
                 <div key={i} className="flex items-center gap-2 py-1.5 border-b border-border-1 last:border-0">
                   <code className="font-mono text-[11px] text-text-1 flex-1 truncate">{d}</code>
                   <a href={`https://www.google.com/search?q=${encodeURIComponent(d)}`} target="_blank" rel="noreferrer"
-                    className="text-blue hover:text-white transition-colors flex-shrink-0">
+                    className="text-blue hover:text-white transition-colors flex-shrink-0"
+                    aria-label="Search on Google">
                     <ExternalLink size={11} />
                   </a>
                 </div>
@@ -1508,6 +1509,7 @@ export function ScanResults({ scan, onHome }: Props) {
                   onClick={sendChat}
                   disabled={!chatInput.trim() || chatLoading}
                   className="btn-primary px-3 h-9 shrink-0"
+                  aria-label="Send message"
                 >
                   <SendHorizontal size={13} />
                 </button>

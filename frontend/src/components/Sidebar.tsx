@@ -149,7 +149,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
 
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface-1 border-r border-border-1 flex flex-col h-screen transform transition-transform duration-200 ease-in-out md:relative md:z-auto md:transform-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-      <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1">✕</button>
+      <button onClick={onClose} className="absolute top-3 right-3 md:hidden text-text-3 hover:text-text-1 p-1" aria-label="Close sidebar">✕</button>
       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-3">
         <div>
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.target')}</label>
@@ -227,7 +227,7 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
               {t('sidebar.recent')}
             </div>
             {recents.length > 0 && (
-              <button onClick={clearRecents} className="text-text-3 hover:text-red transition-colors">
+              <button onClick={clearRecents} className="text-text-3 hover:text-red transition-colors" aria-label="Clear recent scans">
                 <Trash2 size={10} />
               </button>
             )}
@@ -292,12 +292,13 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isOpen, onCl
   <button
     onClick={handleClearHistory}
     className="text-text-3 hover:text-red transition-colors"
+    aria-label="Clear scan history"
   >
     <Trash2 size={10} />
   </button>
 
 
-              <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto">
+              <button onClick={fetchHistory} className="text-text-3 hover:text-text-2 transition-colors ml-auto" aria-label="Refresh history">
                 <RotateCcw size={10} className={historyLoading ? 'spin' : ''} />
               </button>
             </div>

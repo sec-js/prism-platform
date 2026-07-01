@@ -36,7 +36,7 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
 
   return (
     <header className="h-12 flex items-center px-5 border-b border-border-1 bg-surface-1/80 backdrop-blur-sm sticky top-0 z-50">
-      <button onClick={onMenuToggle} className="md:hidden text-text-3 hover:text-text-1 transition-colors p-1 -ml-1">
+      <button onClick={onMenuToggle} className="md:hidden text-text-3 hover:text-text-1 transition-colors p-1 -ml-1" aria-label="Toggle menu">
         <Menu size={18} />
       </button>
 
@@ -135,6 +135,7 @@ export function Topbar({ status, onHome, onMenuToggle }: Props) {
           rel="noopener noreferrer"
           className="text-text-3 hover:text-text-1 transition-colors"
           title="GitHub"
+          aria-label="GitHub repository"
         >
           <Github size={15} />
         </a>
