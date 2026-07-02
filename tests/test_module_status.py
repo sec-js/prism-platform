@@ -87,6 +87,12 @@ class TestAnnotate:
     def test_all_statuses_are_unique(self):
         assert ALL == (OK, SKIPPED, RATE_LIMITED, ERROR)
         assert len(set(ALL)) == 4
+    def test_ok_status_clears_error(self):
+        result = {}
+        annotate(result,OK,"Succesful")
+        assert result["status"] == OK
+        assert result["status_reason"] == "Succesful"
+        assert result["error"] is None
 
 
 class TestKeyDependentModulesSkip:
@@ -137,7 +143,4 @@ class TestKeyDependentModulesSkip:
         assert classify(result) == SKIPPED
         assert result["error"] is None
 
-
-class TestReasonFor:
-    def test_not_dict_
 
