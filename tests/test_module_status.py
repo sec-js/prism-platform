@@ -136,3 +136,8 @@ class TestKeyDependentModulesSkip:
         result = TelegramLookup().lookup_id("123456", bot_token=None)
         assert classify(result) == SKIPPED
         assert result["error"] is None
+
+
+class TestReasonFor:
+    def test_not_dict_
+
