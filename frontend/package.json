@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test:urls": "node scripts/test-api-url.mjs",
     "test:i18n": "node scripts/test-i18n-keys.mjs",
-    "test:scan-target": "node scripts/test-scan-target.mjs"
+    "test:scan-target": "node scripts/test-scan-target.mjs",
+    "test:encoder": "node scripts/test-encoder.mjs"
   },
   "dependencies": {
     "next": "^14.2.0",

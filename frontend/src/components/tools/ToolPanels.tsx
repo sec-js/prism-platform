@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import { Loader2, ArrowLeft, ExternalLink, Upload, XCircle, FileUp } from 'lucide-react';
 import { useTranslations } from '@/lib/i18n';
+import { runEncoder, type EncoderMode } from '@/lib/encoder-utils';
 import * as api from '@/lib/api';
 import type { ToolMode, CryptoResult, QrResult, HeaderAnalysisResult, MetaResult, MacResult } from '@/lib/types';
 
@@ -359,20 +360,14 @@ function EncoderPanel() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'base64' | 'url'>('base64');
+  const [mode, setMode] = useState<EncoderMode>('base64');
 
   const run = (op: 'encode' | 'decode') => {
     setError('');
     setOutput('');
     if (!input) return;
     try {
-      if (mode === 'base64') {
-        setOutput(op === 'encode'
-          ? btoa(unescape(encodeURIComponent(input)))
-          : decodeURIComponent(escape(atob(input))));
-      } else {
-        setOutput(op === 'encode' ? encodeURIComponent(input) : decodeURIComponent(input));
-      }
+      setOutput(runEncoder(input, mode, op));
     } catch {
       setError(t('toolPanels.encoder.invalid'));
     }

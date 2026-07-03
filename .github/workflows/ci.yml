@@ -88,6 +88,7 @@ jobs:
           npm run test:urls
           npm run test:i18n
           npm run test:scan-target
+          npm run test:encoder
 
       - name: Build
         run: npm run build
