@@ -13,6 +13,7 @@ from modules.module_status import (
     classify,
     reason_for,
     status_notice,
+    print_status_notice,
     OK,
     SKIPPED,
     RATE_LIMITED,
@@ -34,6 +35,21 @@ class TestStatusNotice:
         assert status_notice({"status": OK}) is None
         assert status_notice({"error": "boom"}) is None
 
+    def test_notice_for_legacy_error_without_status(self):
+        assert status_notice({"error": "too many requests"}) == "Rate limited: too many requests"
+        assert status_notice({"error": "not set"}) == "Skipped: not set"
+
+    def test_notice_for_skipped_without_reason(self):
+        assert status_notice({"status":SKIPPED}) == "Skipped"
+
+    def test_notice_for_rate_limited_without_reason(self):
+        assert status_notice({"status": RATE_LIMITED}) == "Rate limited"
+
+class TestPrintStatusNotice:
+    def test_print_status_notice_for_error(self):
+        assert print_status_notice({"error": "boom"}) is False
+        assert print_status_notice({"error": "too many requests"}) is True
+        assert print_status_notice({"error": "not set"}) is True
 
 class TestClassify:
     def test_explicit_status_is_honoured(self):
@@ -64,6 +80,12 @@ class TestClassify:
     def test_invalid_explicit_status_falls_back(self):
         assert classify({"status": "bogus", "error": "boom"}) == ERROR
 
+    def test_preceedence_of_rate_limit_hints_over_skipped_hints(self):
+        assert classify({"error":"rate limit and no api"}) == RATE_LIMITED
+    
+    def test_status_precedence_over_error_message(self):
+        assert classify({"status": RATE_LIMITED, "error":"not set"}) == RATE_LIMITED
+        assert classify({"status": SKIPPED, "error":"rate limit"}) == SKIPPED
 
 class TestAnnotate:
     def test_non_error_status_clears_error(self):
@@ -83,11 +105,19 @@ class TestAnnotate:
         assert reason_for({"status_reason": "nice", "error": "raw"}) == "nice"
         assert reason_for({"error": "raw"}) == "raw"
         assert reason_for({}) is None
+        assert reason_for([1,2,3]) is None
+        assert reason_for(None) is None
 
     def test_all_statuses_are_unique(self):
         assert ALL == (OK, SKIPPED, RATE_LIMITED, ERROR)
         assert len(set(ALL)) == 4
 
+    def test_ok_status_clears_error(self):
+        result = {}
+        annotate(result,OK,"Succesful")
+        assert result["status"] == OK
+        assert result["status_reason"] == "Succesful"
+        assert result["error"] is None
 
 class TestKeyDependentModulesSkip:
     """Each key-dependent module should report `skipped` (not a hard error)
@@ -136,3 +166,5 @@ class TestKeyDependentModulesSkip:
         result = TelegramLookup().lookup_id("123456", bot_token=None)
         assert classify(result) == SKIPPED
         assert result["error"] is None
+
+
