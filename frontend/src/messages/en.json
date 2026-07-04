@@ -6,7 +6,8 @@
     "failed": "Failed",
     "toggleTheme": "Toggle theme",
     "github": "GitHub",
-    "apiDocs": "API Documentation"
+    "apiDocs": "API Documentation",
+    "remainingScans": "Remaining scans"
   },
   "sidebar": {
     "target": "Target",

@@ -4,10 +4,11 @@ import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu,
 import { useTheme } from '@/lib/useTheme';
 import { useTranslations, SUPPORTED_LOCALES } from '@/lib/i18n';
 import { Logo } from './Logo';
-import type { ScanStatus } from '@/lib/types';
+import type { ScanStatus, UsageData } from '@/lib/types';
 
 interface Props {
   status: ScanStatus;
+  usage: UsageData | null;
   onHome: () => void;
   onWatchlist: () => void;
   onMenuToggle: () => void;
@@ -30,7 +31,7 @@ function useDateTime() {
   return dt;
 }
 
-export function Topbar({ status, onHome, onWatchlist, onMenuToggle }: Props) {
+export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle }: Props) {
   const { date, time } = useDateTime();
   const { theme, toggleTheme, mounted } = useTheme();
   const { locale, setLocale, t } = useTranslations();
@@ -67,6 +68,14 @@ export function Topbar({ status, onHome, onWatchlist, onMenuToggle }: Props) {
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
+        {usage?.limit != null && usage.remaining != null && (
+          <div className="flex items-center gap-1 text-text-3 p-1.5 text-[11px]">
+              <span>{t('topbar.remainingScans')}:</span>
+              <span className="text-text-1 font-mono">
+                {usage.remaining}/{usage.limit}
+              </span>
+          </div>
+        )}
         {status === 'running' && (
           <div className="flex items-center gap-1.5 text-yellow text-[11px] font-medium">
             <Loader2 size={12} className="spin" />

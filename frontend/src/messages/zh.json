@@ -6,7 +6,8 @@
     "failed": "失败",
     "toggleTheme": "切换主题",
     "github": "GitHub",
-    "apiDocs": "API 文档"
+    "apiDocs": "API 文档",
+    "remainingScans": "剩余扫描次数"
   },
   "sidebar": {
     "target": "目标",

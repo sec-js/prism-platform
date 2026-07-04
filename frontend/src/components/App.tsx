@@ -9,8 +9,8 @@ import { ResultsSkeleton } from './ResultsSkeleton';
 import { ToolPanels } from './tools/ToolPanels';
 import { ScanComparison } from './views/ScanComparison';
 import { WatchlistView } from './views/WatchlistView';
-import { startScan, getWsUrl, getScan } from '@/lib/api';
-import type { ScanType, ScanStatus, ToolMode, ScanResults as ScanResultsType, ScanMeta, LiveModuleStatus } from '@/lib/types';
+import { startScan, getWsUrl, getScan, getUsage } from '@/lib/api';
+import type { ScanType, ScanStatus, ToolMode, ScanResults as ScanResultsType, ScanMeta, LiveModuleStatus, UsageData } from '@/lib/types';
 
 type View = 'idle' | 'tool' | 'scanning' | 'results' | 'compare' | 'watchlist';
 
@@ -44,7 +44,9 @@ export function App() {
   const [moduleStatuses, setModuleStatuses] = useState<Record<string, LiveModuleStatus>>({});
   const [totalModules, setTotalModules] = useState(0);
   const [compareIds, setCompareIds] = useState<[string, string] | null>(null);
+  const [usage, setUsage] = useState<UsageData | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const usageLimitedRef = useRef(true);
 
   const handleHome = useCallback(() => {
     if (wsRef.current) { wsRef.current.close(); wsRef.current = null; }
@@ -69,6 +71,21 @@ export function App() {
     setView('watchlist');
   }, []);
 
+  const handleUsageRefresh = useCallback(async () => {
+    if (!usageLimitedRef.current) return;
+
+    try {
+      const data = await getUsage();
+      setUsage(data);
+
+      if (data.limit === null) {
+        usageLimitedRef.current = false;
+      }
+    } catch {
+      setUsage(null);
+    }
+  }, []);
+
   const fetchAndShowResults = useCallback(async (id: string) => {
     try {
       const raw = await getScan(id) as any;
@@ -83,11 +100,14 @@ export function App() {
       setScanStatus('completed');
       setScanMeta(normalized);
       setView('results');
+      // handleUsageRefresh();
     } catch {
       setScanStatus('failed');
       setProgressLog(prev => [...prev, 'Failed to fetch results after scan completed']);
     }
   }, []);
+  // TODO
+  // }, [handleUsageRefresh]);
 
   const handleLoadScan = useCallback((scanId: string) => {
     fetchAndShowResults(scanId);
@@ -213,11 +233,16 @@ export function App() {
       const { scan_id } = await startScan(target, type, modules);
       setScanId(scan_id);
       connectWs(scan_id);
+      handleUsageRefresh();
     } catch (e: unknown) {
       setScanStatus('failed');
       setProgressLog([`Failed to start scan: ${e instanceof Error ? e.message : 'Unknown error'}`]);
     }
-  }, [connectWs]);
+  }, [connectWs, handleUsageRefresh]);
+
+  useEffect(() => {
+    handleUsageRefresh();
+  }, [handleUsageRefresh]);
 
   useEffect(() => {
     return () => { wsRef.current?.close(); };
@@ -225,7 +250,7 @@ export function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar status={scanStatus} onHome={handleHome} onWatchlist={handleWatchlist} onMenuToggle={() => setSidebarOpen(v => !v)} />
+      <Topbar status={scanStatus} usage={usage} onHome={handleHome} onWatchlist={handleWatchlist} onMenuToggle={() => setSidebarOpen(v => !v)} />
       <div className="flex flex-1 relative">
         {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/50 z-40 md:hidden" />}
         <Sidebar onScan={handleScan} onLoadScan={handleLoadScan} onCompare={handleCompare} isRunning={scanStatus === 'running'} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

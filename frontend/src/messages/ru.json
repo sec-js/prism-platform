@@ -6,7 +6,8 @@
     "failed": "Ошибка",
     "toggleTheme": "Сменить тему",
     "github": "GitHub",
-    "apiDocs": "Документация API"
+    "apiDocs": "Документация API",
+    "remainingScans": "Осталось сканирований"
   },
   "sidebar": {
     "target": "Цель",

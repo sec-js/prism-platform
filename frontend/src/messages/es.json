@@ -6,7 +6,8 @@
     "failed": "Fallido",
     "toggleTheme": "Cambiar tema",
     "github": "GitHub",
-    "apiDocs": "Documentación API"
+    "apiDocs": "Documentación API",
+    "remainingScans": "Escaneos restantes"
   },
   "sidebar": {
     "target": "Objetivo",

@@ -6,7 +6,8 @@
     "failed": "Błąd",
     "toggleTheme": "Zmień motyw",
     "github": "GitHub",
-    "apiDocs": "Dokumentacja API"
+    "apiDocs": "Dokumentacja API",
+    "remainingScans": "Pozostałe skany"
   },
   "sidebar": {
     "target": "Cel",

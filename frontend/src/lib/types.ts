@@ -375,3 +375,12 @@ export interface JwtResult {
   nbf?: string | null;
   error?: string;
 }
+
+export interface UsageData {
+  principal: string;
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  resets_at: number;
+  window_seconds: number;
+}

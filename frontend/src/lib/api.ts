@@ -1,4 +1,4 @@
-import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult, Watchlist, WatchlistAlert } from './types';
+import type { ScanType, ScanResults, ScanMeta, UrlScanResult, CryptoResult, DarkWebResult, QrResult, HeaderAnalysisResult, MetaResult, Watchlist, WatchlistAlert, UsageData } from './types';
 import { getPrismApiKey, getPrismApiUrl, getPrismBasePath } from './prism-config';
 import { buildApiUrl, buildWsUrl, normalizeBasePath } from './url-utils';
 
@@ -98,6 +98,10 @@ export async function getMapData(scanId: string): Promise<unknown> {
 export async function getGraphData(scanId: string): Promise<unknown> {
   const r = await fetch(apiUrl(`/api/scan/${scanId}/graph`), { headers: authHeaders() });
   return r.json();
+}
+
+export function getUsage(): Promise<UsageData> {
+  return get('/api/usage');
 }
 
 export function getWsUrl(scanId: string): string {
@@ -211,3 +215,4 @@ export function deleteWatchlist(id: string): Promise<void> {
 export function getWatchlistAlerts(id: string): Promise<{ id: string; alerts: WatchlistAlert[] }> {
   return get(`/api/watchlist/${id}/alerts`);
 }
+
