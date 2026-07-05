@@ -9,7 +9,7 @@ python-whois>=0.8.0
 
 maigret>=0.4.4
 
-dataclasses-json>=0.6.0
+dataclasses-json>=0.6.7
 
 Jinja2>=3.1.0
 
