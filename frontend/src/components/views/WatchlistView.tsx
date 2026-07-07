@@ -80,6 +80,47 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
     }
   };
 
+  const exportAlertsJson = (w: Watchlist) => {
+  try {
+    const blob = new Blob([JSON.stringify(w.alerts, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prism-watchlist-${w.target}-alerts.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  } catch (e: unknown) {
+    setError(e instanceof Error ? e.message : 'JSON download failed');
+  }
+};
+
+const exportAlertsCsv = (w: Watchlist) => {
+  try {
+    const rows = w.alerts.map(a => [
+      fmtTime(a.at),
+      a.added_count,
+      a.removed_count,
+      a.added.join('; '),
+      a.removed.join('; '),
+    ]);
+    const header = ['time', 'added_count', 'removed_count', 'added', 'removed'];
+    const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prism-watchlist-${w.target}-alerts.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  } catch (e: unknown) {
+    setError(e instanceof Error ? e.message : 'CSV download failed');
+  }
+};
+
   const togglePause = async (w: Watchlist) => {
     try {
       const updated = await setWatchlistPaused(w.id, !w.paused);
@@ -207,6 +248,22 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
 
               {expanded === w.id && (
                 <div className="border-t border-border-1 p-3">
+                  {w.alerts.length > 0 && (
+                <div className="flex gap-2 mb-3">
+                  <button
+                    onClick={() => exportAlertsJson(w)}
+                    className="px-3 py-1 text-xs rounded border border-border-1 text-text-2 hover:text-text-1 hover:bg-surface-2 transition-colors"
+                  >
+                    Export JSON
+                  </button>
+                  <button
+                    onClick={() => exportAlertsCsv(w)}
+                    className="px-3 py-1 text-xs rounded border border-border-1 text-text-2 hover:text-text-1 hover:bg-surface-2 transition-colors"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+                )}
                   {w.alerts.length === 0 ? (
                     <div className="text-[12px] text-text-3">{t('watchlist.noAlerts')}</div>
                   ) : (
