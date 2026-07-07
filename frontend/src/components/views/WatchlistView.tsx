@@ -4,6 +4,7 @@ import { Eye, Plus, Trash2, Bell, Clock, RefreshCw, ChevronDown, ChevronUp, Aler
 import { listWatchlists, createWatchlist, deleteWatchlist, setWatchlistPaused } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
 import type { Watchlist, ScanType } from '@/lib/types';
+import { formatWatchlistChange } from '@/lib/watchlist-alert-utils';
 
 const SCAN_TYPES: (ScanType | 'auto')[] = ['auto', 'domain', 'ip', 'email', 'phone', 'username'];
 
@@ -216,7 +217,7 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
                             {fmtTime(a.at)} · <span className="text-green">+{a.added_count}</span> / <span className="text-red">−{a.removed_count}</span> {t('watchlist.changes')}
                           </div>
                           <div className="font-mono space-y-0.5">
-                            {a.added.map((c, j) => <div key={`a${j}`} className="text-green break-all">+ {c}</div>)}
+                            {a.added.map((c, j) => <div key={`a${j}`} className="text-green break-all">+ {formatWatchlistChange(c)}</div>)}
                             {a.removed.map((c, j) => <div key={`r${j}`} className="text-red break-all">− {c}</div>)}
                           </div>
                         </div>
