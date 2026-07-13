@@ -240,6 +240,10 @@ export function setWatchlistPaused(id: string, paused: boolean): Promise<Watchli
   return patch(`/api/watchlist/${id}`, { paused });
 }
 
+export function testWebhook(webhook_url: string): Promise<{ ok: boolean; url: string }> {
+  return post('/api/watchlist/test-webhook', { webhook_url });
+}
+
 export function getWatchlistAlerts(id: string): Promise<{ id: string; alerts: WatchlistAlert[] }> {
   return get(`/api/watchlist/${id}/alerts`);
 }

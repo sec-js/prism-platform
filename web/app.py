@@ -734,6 +734,31 @@ async def patch_watchlist_entry(request: Request, watch_id: str, req: WatchlistP
         return JSONResponse({"error": "Watchlist not found"}, status_code=404)
     return entry
 
+class TestWebhookRequest(BaseModel):
+    webhook_url: str
+
+@app.post("/api/watchlist/test-webhook", dependencies=[Depends(require_api_key)])
+@limiter.limit("10/minute")
+async def test_webhook(request: Request, req: TestWebhookRequest):
+    try:
+        url = _validate_webhook_url(req.webhook_url.strip())
+    except ValueError as e:
+        return JSONResponse({"error": str(e)}, status_code=400)
+    payload = {
+        "event": "watchlist_test",
+        "message": "This is a test webhook from Prism.",
+        "target": "example.com",
+        "scan_type": "domain",
+        "added": 1,
+        "removed": 0,
+        "changes": ["+test.example.com"],
+    }
+    try:
+        _send_webhook(url, payload)
+    except Exception as e:
+        return JSONResponse({"error": f"Webhook delivery failed: {e}"}, status_code=502)
+    return {"ok": True, "url": url}
+
 @app.post("/api/scan", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def start_scan(request: Request, req: ScanRequest):

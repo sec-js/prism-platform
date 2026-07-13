@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { Eye, Plus, Trash2, Bell, Clock, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft, Pause, Play } from 'lucide-react';
-import { listWatchlists, createWatchlist, deleteWatchlist, setWatchlistPaused } from '@/lib/api';
 import { useTranslations } from '@/lib/i18n';
 import type { Watchlist, ScanType } from '@/lib/types';
 import { formatWatchlistChange } from '@/lib/watchlist-alert-utils';
+import { listWatchlists, createWatchlist, deleteWatchlist, setWatchlistPaused, testWebhook } from '@/lib/api';
 
 const SCAN_TYPES: (ScanType | 'auto')[] = ['auto', 'domain', 'ip', 'email', 'phone', 'username'];
 
@@ -32,6 +32,8 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
   const [scanType, setScanType] = useState<ScanType | 'auto'>('auto');
   const [interval, setIntervalHours] = useState(24);
   const [webhook, setWebhook] = useState('');
+  const [testingWebhook, setTestingWebhook] = useState(false);
+  const [webhookTestResult, setWebhookTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -70,6 +72,20 @@ export function WatchlistView({ onBack }: { onBack: () => void }) {
       setCreating(false);
     }
   };
+
+const handleTestWebhook = async () => {
+  if (!webhook.trim()) return;
+  setTestingWebhook(true);
+  setWebhookTestResult(null);
+  try {
+    await testWebhook(webhook.trim());
+    setWebhookTestResult({ ok: true, message: 'Test webhook delivered successfully.' });
+  } catch (e: unknown) {
+    setWebhookTestResult({ ok: false, message: e instanceof Error ? e.message : 'Test failed.' });
+  } finally {
+    setTestingWebhook(false);
+  }
+};
 
   const remove = async (id: string) => {
     try {
@@ -181,12 +197,27 @@ const exportAlertsCsv = (w: Watchlist) => {
           </div>
           <div className="sm:col-span-2">
             <label className="block text-[10px] uppercase tracking-wider text-text-3 mb-1">{t('watchlist.webhookUrl')}</label>
-            <input
-              value={webhook}
-              onChange={e => setWebhook(e.target.value)}
-              placeholder="https://hooks.slack.com/…"
-              className="w-full bg-surface-2 border border-border-1 rounded px-3 py-2 text-sm text-text-1 font-mono focus:outline-none focus:border-blue"
-            />
+            <div className="flex gap-2">
+              <input
+                value={webhook}
+                onChange={e => { setWebhook(e.target.value); setWebhookTestResult(null); }}
+                placeholder="https://hooks.slack.com/…"
+                className="flex-1 bg-surface-2 border border-border-1 rounded px-3 py-2 text-sm text-text-1 font-mono focus:outline-none focus:border-blue"
+              />
+              <button
+                type="button"
+                disabled={!webhook.trim() || testingWebhook}
+                onClick={handleTestWebhook}
+                className="px-3 py-2 text-xs rounded border border-border-1 bg-surface-2 text-text-2 hover:border-blue hover:text-blue disabled:opacity-40 whitespace-nowrap"
+              >
+                {testingWebhook ? 'Sending…' : 'Send test'}
+              </button>
+            </div>
+            {webhookTestResult && (
+              <p className={`text-xs mt-1 ${webhookTestResult.ok ? 'text-green' : 'text-red'}`}>
+                {webhookTestResult.message}
+              </p>
+            )}
           </div>
         </div>
         <button type="submit" disabled={creating || !target.trim()} className="btn-primary mt-3 disabled:opacity-50">

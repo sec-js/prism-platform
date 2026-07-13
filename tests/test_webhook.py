@@ -67,3 +67,95 @@ class TestWebhookDelivery:
         monkeypatch.setattr(app_mod._requests, "post", boom)
                         
         app_mod._send_webhook("https://hooks.example.com/prism", {"x": 1})
+
+
+class TestTestWebhookEndpoint:
+    """Tests for POST /api/watchlist/test-webhook"""
+
+    def _client(self, monkeypatch, fake_post=None):
+        from web import app as app_mod
+        from web import security
+        from fastapi.testclient import TestClient
+
+        monkeypatch.setattr(security, "_API_KEYS", ["test-key"])
+        monkeypatch.setattr("socket.gethostbyname", lambda h: "93.184.216.34")
+        monkeypatch.setattr(
+            app_mod._requests, "head",
+            lambda *a, **kw: (_ for _ in ()).throw(Exception("skip"))
+        )
+        if fake_post is not None:
+            monkeypatch.setattr(app_mod._requests, "post", fake_post)
+        return TestClient(app_mod.app, raise_server_exceptions=True)
+
+    def test_returns_ok_on_success(self, monkeypatch):
+        captured = {}
+
+        def fake_post(url, json=None, headers=None, timeout=None):
+            captured["url"] = url
+            captured["json"] = json
+
+        client = self._client(monkeypatch, fake_post)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "https://hooks.example.com/prism"},
+            headers={"X-API-Key": "test-key"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["ok"] is True
+        assert captured["json"]["event"] == "watchlist_test"
+
+    def test_rejects_private_url(self, monkeypatch):
+        from web import app as app_mod
+        from web import security
+        from fastapi.testclient import TestClient
+
+        monkeypatch.setattr(security, "_API_KEYS", ["test-key"])
+        monkeypatch.setattr("socket.gethostbyname", lambda h: "10.0.0.1")
+        client = TestClient(app_mod.app, raise_server_exceptions=True)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "http://internal.corp/hook"},
+            headers={"X-API-Key": "test-key"},
+        )
+        assert resp.status_code == 400
+        assert "error" in resp.json()
+
+    def test_rejects_invalid_scheme(self, monkeypatch):
+        client = self._client(monkeypatch)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "ftp://example.com/hook"},
+            headers={"X-API-Key": "test-key"},
+        )
+        assert resp.status_code == 400
+
+    def test_requires_api_key(self, monkeypatch):
+        from web import app as app_mod
+        from web import security
+        from fastapi.testclient import TestClient
+
+        monkeypatch.setattr(security, "_API_KEYS", ["test-key"])
+        client = TestClient(app_mod.app, raise_server_exceptions=True)
+        resp = client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "https://hooks.example.com/prism"},
+        )
+        assert resp.status_code in (401, 403)
+
+    def test_payload_shape(self, monkeypatch):
+        captured = {}
+
+        def fake_post(url, json=None, headers=None, timeout=None):
+            captured["json"] = json
+
+        client = self._client(monkeypatch, fake_post)
+        client.post(
+            "/api/watchlist/test-webhook",
+            json={"webhook_url": "https://hooks.example.com/prism"},
+            headers={"X-API-Key": "test-key"},
+        )
+        payload = captured["json"]
+        assert payload["event"] == "watchlist_test"
+        assert "target" in payload
+        assert "added" in payload
+        assert "changes" in payload
