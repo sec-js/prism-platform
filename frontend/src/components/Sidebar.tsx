@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Play, Loader2, ChevronDown, ChevronUp, Lightbulb, RotateCcw, Trash2, History, GitCompare } from 'lucide-react';
+import { Play, Loader2, ChevronDown, ChevronUp, Lightbulb, RotateCcw, Trash2, History, GitCompare, X } from 'lucide-react';
 import { useTranslations } from '@/lib/i18n';
 import { listScans, clearScans, type ScanListItem } from '@/lib/api';
 import type { ScanType } from '@/lib/types';
@@ -154,13 +154,25 @@ export function Sidebar({ onScan, onLoadScan, onCompare, isRunning, isStarting =
       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-3">
         <div>
           <label className="text-[10px] font-semibold text-text-3 uppercase tracking-wider block mb-1.5">{t('sidebar.target')}</label>
-          <input
-            value={target}
-            onChange={e => setTarget(e.target.value)}
-            placeholder={t('sidebar.targetPlaceholder')}
-            className="input-field"
-            disabled={isRunning}
-          />
+          <div className="relative">
+            <input
+              value={target}
+              onChange={e => setTarget(e.target.value)}
+              placeholder={t('sidebar.targetPlaceholder')}
+              className={`input-field ${target ? 'pr-7' : ''}`}
+              disabled={isRunning}
+            />
+            {target && (
+              <button
+                type="button"
+                onClick={() => setTarget('')}
+                aria-label="Clear target"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-text-3 hover:text-text-1 transition-colors"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
         </div>
 
         <div>
