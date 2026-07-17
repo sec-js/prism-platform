@@ -11,6 +11,7 @@ Scan any domain, IP, email, phone, or username — get WHOIS, DNS, threat intel,
 [![CI](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/NovaCode37/Prism-platform/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-2.4.0-7c5cfc?style=flat-square)](CHANGELOG.md)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-getprism.su-7c5cfc?style=flat-square&logo=firefox)](https://getprism.su)
+[![Firefox Add-on](https://img.shields.io/amo/v/prism-osint?style=flat-square&logo=firefoxbrowser&logoColor=white&label=Firefox%20Add-on&color=ff7139)](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-137%20passing-3fb950?style=flat-square)](#running-tests)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
@@ -164,6 +165,18 @@ flowchart LR
 
 <p align="center">
   <img src="docs/pics/username_showcase/ai_summ_showcase.png" alt="AI Summary" width="720" />
+</p>
+
+<h3 align="center">Browser Extension</h3>
+
+<p align="center">Right-click any domain, email, username, or IP — the full scan runs right inside the popup. No tab switching, no copy-paste.</p>
+
+<p align="center">
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/prism-osint/"><img src="https://img.shields.io/badge/Get%20it%20on-Firefox%20Add--ons-ff7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white" alt="Get PRISM on Firefox Add-ons" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/extension-demo.gif" alt="PRISM browser extension demo" width="300" />
 </p>
 
 <details>
@@ -624,7 +637,7 @@ GitHub Actions pipeline (`.github/workflows/ci.yml`):
 - [x] SSRF hardening for scan/watchlist targets + maigret path-traversal fix
 
 ### v2.6 — in progress
-- [x] Browser extension for one-click scans (Firefox-ready — see [extension/](extension/))
+- [x] Browser extension for one-click scans — **[live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/)** ([source](extension/))
 - [ ] *(exploring)* AI OSINT agent — autonomous multi-module investigation
 
 > Want to contribute? Pick an open issue tagged `good first issue` or open a new one.
@@ -684,7 +697,7 @@ ETH:          0x0639476A71255FD2C15dceD53e167952DcddEE8A
   </tr>
 </table>
 
-**Want the browser extension in your store?** The [PRISM extension](extension/) is ready for Firefox. Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store — if you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
+**Want the browser extension in your store?** The [PRISM extension](extension/) is [live on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/prism-osint/). Publishing it to the Chrome Web Store, Yandex, or other markets costs a registration fee per store — if you want it listed in a specific one, a donation covers that and funds further development. Reach out and I'll ship it.
 
 ---
 

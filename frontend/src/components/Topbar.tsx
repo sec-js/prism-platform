@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book, Eye } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Github, Star, Terminal, Sun, Moon, Menu, Languages, Book, Eye, Puzzle } from 'lucide-react';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslations, SUPPORTED_LOCALES } from '@/lib/i18n';
 import { Logo } from './Logo';
@@ -125,6 +125,17 @@ export function Topbar({ status, usage, onHome, onWatchlist, onMenuToggle }: Pro
         >
           {mounted ? (theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} />}
         </button>
+        <a
+          href="https://addons.mozilla.org/en-US/firefox/addon/prism-osint/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-text-3 hover:text-[#ff7139] transition-colors text-[11px]"
+          title="Get the Firefox extension"
+          aria-label="Get the Firefox extension"
+        >
+          <Puzzle size={15} />
+          <span className="hidden sm:inline">Extension</span>
+        </a>
         <a
           href="https://github.com/NovaCode37/Prism-platform#api"
           target="_blank"
