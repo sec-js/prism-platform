@@ -32,9 +32,11 @@ from modules.webhook_formatters import format_slack, format_discord
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-_LLM_KEY = OPENROUTER_API_KEY or GROQ_API_KEY
-_LLM_URL = "https://openrouter.ai/api/v1/chat/completions" if OPENROUTER_API_KEY else "https://api.groq.com/openai/v1/chat/completions"
+_LLM_KEY = os.getenv("LLM_API_KEY") or OPENROUTER_API_KEY or GROQ_API_KEY
+_LLM_URL = os.getenv("LLM_BASE_URL") or ("https://openrouter.ai/api/v1/chat/completions" if OPENROUTER_API_KEY else "https://api.groq.com/openai/v1/chat/completions")
 _LLM_MODEL = os.getenv("LLM_MODEL") or ("nvidia/nemotron-3-nano-30b-a3b:free" if OPENROUTER_API_KEY else "llama-3.1-8b-instant")
+_LLM_PROXY = os.getenv("LLM_PROXY", "").strip()
+_LLM_PROXIES = {"http": _LLM_PROXY, "https": _LLM_PROXY} if _LLM_PROXY else None
 
 from web.security import (
     require_api_key, validate_target, check_upload_size, get_allowed_origins,
@@ -1219,6 +1221,7 @@ async def ai_summary(request: Request, req: dict):
                 json={"model": _LLM_MODEL, "messages": [{"role": "user", "content": prompt}],
                       "temperature": 0.3, "max_tokens": 1024},
                 timeout=30,
+                proxies=_LLM_PROXIES,
             )
             try:
                 return r.json()
@@ -1277,6 +1280,7 @@ async def ai_chat(request: Request, req: dict):
                     "max_tokens": 512,
                 },
                 timeout=30,
+                proxies=_LLM_PROXIES,
             )
             try:
                 return r.json()
