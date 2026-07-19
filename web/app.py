@@ -1180,6 +1180,11 @@ async def extract_metadata_endpoint(request: Request, file: UploadFile = File(..
         except Exception:
             pass
 
+def _llm_error_message(err) -> str:
+    if isinstance(err, dict):
+        return str(err.get("message") or err.get("code") or err)
+    return str(err)
+
 @app.post("/api/ai/summary", dependencies=[Depends(require_api_key)])
 @limiter.limit("10/minute")
 async def ai_summary(request: Request, req: dict):
@@ -1215,10 +1220,15 @@ async def ai_summary(request: Request, req: dict):
                       "temperature": 0.3, "max_tokens": 1024},
                 timeout=30,
             )
-            return r.json()
+            try:
+                return r.json()
+            except ValueError:
+                return {"error": f"HTTP {r.status_code} from LLM provider: {r.text[:200]}"}
         data = await loop.run_in_executor(None, _llm_call)
-        if "error" in data:
-            return JSONResponse({"error": data["error"].get("message", str(data["error"]))}, status_code=400)
+        if not isinstance(data, dict):
+            return JSONResponse({"error": f"Unexpected response: {str(data)[:300]}"}, status_code=500)
+        if data.get("error"):
+            return JSONResponse({"error": _llm_error_message(data["error"])}, status_code=400)
         if not data.get("choices"):
             return JSONResponse({"error": f"Unexpected response: {json.dumps(data)[:300]}"}, status_code=500)
         text = data["choices"][0]["message"]["content"]
@@ -1268,10 +1278,15 @@ async def ai_chat(request: Request, req: dict):
                 },
                 timeout=30,
             )
-            return r.json()
+            try:
+                return r.json()
+            except ValueError:
+                return {"error": f"HTTP {r.status_code} from LLM provider: {r.text[:200]}"}
         data = await loop.run_in_executor(None, _llm_chat)
-        if "error" in data:
-            return JSONResponse({"error": data["error"].get("message", str(data["error"]))}, status_code=400)
+        if not isinstance(data, dict):
+            return JSONResponse({"error": f"Unexpected response: {str(data)[:200]}"}, status_code=500)
+        if data.get("error"):
+            return JSONResponse({"error": _llm_error_message(data["error"])}, status_code=400)
         if not data.get("choices"):
             return JSONResponse({"error": f"Unexpected response: {json.dumps(data)[:200]}"}, status_code=500)
         reply = data["choices"][0]["message"]["content"]
